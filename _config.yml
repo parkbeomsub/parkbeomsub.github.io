@@ -12,27 +12,27 @@
 
 # theme                  : "minimal-mistakes-jekyll"
 # remote_theme           : "mmistakes/minimal-mistakes"
-minimal_mistakes_skin    : "default" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise"
+minimal_mistakes_skin    :  "mint" # "air", "aqua", "contrast", "dark", "dirt", "neon", "mint", "plum", "sunrise" "default"  "plum"
 
 # Site Settings
-locale                   : "en-US"
-title                    : "To be Devops"
-title_separator          : "-"
-subtitle                 : # site tagline that appears below site title in masthead
+locale                   : "ko-KR"
+title                    : "Base-On"
+title_separator          : "|"
+subtitle                 : "small postive action"
 name                     : "박 범수"
 description              : "열심히 작성해볼게요."
 url                      : "https://parkbeomsub.github.io"
 baseurl                  : # the subpath of your site, e.g. "/blog"
 repository               : # GitHub username/repo-name e.g. "mmistakes/minimal-mistakes"
 teaser                   : # path of fallback teaser image, e.g. "/assets/images/500x300.png"
-logo                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
+logo                     : /assets/images/88x88.jpg
 masthead_title           : # overrides the website title displayed in the masthead, use " " for no title
-# breadcrumbs            : false # true, false (default)
+breadcrumbs            :  true # false (default)
 words_per_minute         : 200
 comments:
-  provider               : # false (default), "disqus", "discourse", "facebook", "staticman", "staticman_v2", "utterances", "giscus", "custom"
+  provider               :  "disqus" # "discourse", "facebook", "staticman", "staticman_v2", "utterances", "giscus", "custom"
   disqus:
-    shortname            : # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-
+    shortname            : "parkbeomsub" # https://help.disqus.com/customer/portal/articles/466208-what-s-a-shortname-""
   discourse:
     server               : # https://meta.discourse.org/t/embedding-discourse-comments-via-javascript/31963 , e.g.: meta.discourse.org
   facebook:
@@ -104,10 +104,10 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Name"
+  name             : "박 범수"
   avatar           : # path of avatar image, e.g. "/assets/images/bio-photo.jpg"
-  bio              : "I am an **amazing** person."
-  location         : "Somewhere"
+  bio              : "이직을 위한 블로그"
+  location         : "South Korea"
   email            :
   links:
     - label: "Email"
@@ -287,6 +287,9 @@ defaults:
       layout: single
       author_profile: true
       read_time: true
-      comments: # true
+      comments:  true
       share: true
       related: true
+      show_date: true
+
+date_format: "%Y-%m-%d"      
