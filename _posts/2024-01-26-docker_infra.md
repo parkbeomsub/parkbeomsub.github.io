@@ -279,7 +279,7 @@ docker container run [image] [실행할 명령어]
 #Ex )  docker container run ubuntu:latest /bin/echo 'Hello World'
 ```
 
-![Untitled](../Images/dockerUntitled.png)
+![Untitled](../Images/docker/Untitled.png)
 
 이미지가 서버에 존재하지 않아  image 다운로드  > docker hub repository에서 다운로드 됨
 
@@ -291,13 +291,13 @@ docker container run [image] [실행할 명령어]
 docker version
 ```
 
-![Untitled](../Images/dockerUntitled%201.png)
+![Untitled](../Images/docker/Untitled%201.png)
 
 도커는 클라이언트/서버 아케텍처 채택하고 있어 Docker 클라이언트와 서버 Remote APIㄹ을 경유하여 연결되어 있습니다.
 
 -Docker 실행 환경 확인 (docker system info)
 
-![Untitled](../Images/dockerUntitled%202.png)
+![Untitled](../Images/docker/Untitled%202.png)
 
 컨테이너 수 / 버전/ 스토리지 드라이버 종류 / os 종류 / 아키텍처 확인이 가능하다.
 
@@ -307,7 +307,7 @@ docker version
 docker system df
 ```
 
-![Untitled](../Images/dockerUntitled%203.png)
+![Untitled](../Images/docker/Untitled%203.png)
 
 구체적을 확인은 -v를 추가한다.
 
@@ -317,14 +317,14 @@ docker system df
 #docker pull nginx
 ```
 
-![Untitled](../Images/dockerUntitled%204.png)
+![Untitled](../Images/docker/Untitled%204.png)
 
 ```jsx
 #이미지 리스트 확인
 docker images 
 ```
 
-![Untitled](../Images/dockerUntitled%205.png)
+![Untitled](../Images/docker/Untitled%205.png)
 
 -다운로드 받은 nginx이미지로 컨테이너 생성 / 동작확인
 
@@ -337,11 +337,11 @@ docker ps
 docker status webserver
 ```
 
-![Untitled](../Images/dockerUntitled%206.png)
+![Untitled](../Images/docker/Untitled%206.png)
 
-![Untitled](../Images/dockerUntitled%207.png)
+![Untitled](../Images/docker/Untitled%207.png)
 
-![Untitled](../Images/dockerUntitled%208.png)
+![Untitled](../Images/docker/Untitled%208.png)
 
 -기동정지
 
@@ -350,7 +350,7 @@ docker stop webserver
 docker start webserver
 ```
 
-![Untitled](../Images/dockerUntitled%209.png)
+![Untitled](../Images/docker/Untitled%209.png)
 
 1. **Docker 명령어**
 
@@ -392,7 +392,7 @@ docker image ls
 $export DOCKER_CONTENT_TRUST=1
 ```
 
-![Untitled](../Images/dockerUntitled%2010.png)
+![Untitled](../Images/docker/Untitled%2010.png)
 
 이미지 상세 정보확인
 
@@ -400,7 +400,7 @@ $export DOCKER_CONTENT_TRUST=1
 docker image inspect centos:7
 ```
 
-![Untitled](../Images/dockerUntitled%2011.png)
+![Untitled](../Images/docker/Untitled%2011.png)
 
 확인 해볼 값
 
@@ -413,7 +413,7 @@ docker image inspect centos:7
 
 docker image inspect --format="{{.Os}}" centos:7
 
-![Untitled](../Images/dockerUntitled%2012.png)
+![Untitled](../Images/docker/Untitled%2012.png)
 
 이미지 태그 설정(docker  image tag)
 
@@ -423,7 +423,7 @@ docker image inspect --format="{{.Os}}" centos:7
 docker tag image  변경할 태그
 ```
 
-![Untitled](../Images/dockerUntitled%2013.png)
+![Untitled](../Images/docker/Untitled%2013.png)
 
 이미지 검색 (docker search)
 
@@ -431,7 +431,7 @@ docker tag image  변경할 태그
 docker search image_name
 ```
 
-![Untitled](../Images/dockerUntitled%2014.png)
+![Untitled](../Images/docker/Untitled%2014.png)
 
 옵션
 
@@ -447,7 +447,7 @@ docker search image_name
 docker image rm
 ```
 
-![Untitled](../Images/dockerUntitled%2015.png)
+![Untitled](../Images/docker/Untitled%2015.png)
 
 —f : 강제삭제
 
@@ -457,7 +457,7 @@ docker image rm
 docker image prune 이미지
 ```
 
-![Untitled](../Images/dockerUntitled%2016.png)
+![Untitled](../Images/docker/Untitled%2016.png)
 
 Docker Hub에 로그인 (docker login)
 
@@ -465,7 +465,7 @@ Docker Hub에 로그인 (docker login)
 docker login [옵션] [서버]
 ```
 
-![Untitled](../Images/dockerUntitled%2017.png)
+![Untitled](../Images/docker/Untitled%2017.png)
 
 옵션
 
@@ -498,7 +498,7 @@ docker container run -d centos /bin/ping localhost
 docker container run [테트워크 옵션] 이미지
 ```
 
-![Untitled](../Images/dockerUntitled%2018.png)
+![Untitled](../Images/docker/Untitled%2018.png)
 
 -a :   표준 입출력 출력오류에 어테치한다.
 
@@ -600,13 +600,13 @@ docker container stats [식별자]
 docker  container logs -t [타임스탬프]
 ```
 
-![Untitled](../Images/dockerUntitled%2019.png)
+![Untitled](../Images/docker/Untitled%2019.png)
 
 ```jsx
 docker container run -d -p 8080:80 nginx
 ```
 
-![Untitled](../Images/dockerUntitled%2020.png)
+![Untitled](../Images/docker/Untitled%2020.png)
 
 ```jsx
 docker container run -d --mac-address="11:1a:1b:1c:10:1a" centos
@@ -650,19 +650,19 @@ set |grep foo
 foo=bar
 ```
 
-![Untitled](../Images/dockerUntitled%2021.png)
+![Untitled](../Images/docker/Untitled%2021.png)
 
 ```jsx
 docker container run -it  --env-file=env_list  centos /bin/bash
 ```
 
-![Untitled](../Images/dockerUntitled%2022.png)
+![Untitled](../Images/docker/Untitled%2022.png)
 
 ```jsx
 docker container run -it  -w=/tensorflow centos /bin/bash
 ```
 
-![Untitled](../Images/dockerUntitled%2023.png)
+![Untitled](../Images/docker/Untitled%2023.png)
 
 실행목록
 
@@ -670,7 +670,7 @@ docker container run -it  -w=/tensorflow centos /bin/bash
 docker container ls
 ```
 
-![Untitled](../Images/dockerUntitled%2024.png)
+![Untitled](../Images/docker/Untitled%2024.png)
 
 상태확인
 
@@ -678,7 +678,7 @@ docker container ls
 docker container stats 6b1399d64a90
 ```
 
-![Untitled](../Images/dockerUntitled%2025.png)
+![Untitled](../Images/docker/Untitled%2025.png)
 
 컨테이너 시작
 
@@ -686,7 +686,7 @@ docker container stats 6b1399d64a90
 docker container start [식별자]
 ```
 
-![Untitled](../Images/dockerUntitled%2026.png)
+![Untitled](../Images/docker/Untitled%2026.png)
 
 정지
 
@@ -694,7 +694,7 @@ docker container start [식별자]
 docker container  stop[이름] [이미지]
 ```
 
-![Untitled](../Images/dockerUntitled%2027.png)
+![Untitled](../Images/docker/Untitled%2027.png)
 
 재시작
 
@@ -702,7 +702,7 @@ docker container  stop[이름] [이미지]
 docker container restart [식별자]
 ```
 
-![Untitled](../Images/dockerUntitled%2028.png)
+![Untitled](../Images/docker/Untitled%2028.png)
 
 삭제
 
@@ -710,7 +710,7 @@ docker container restart [식별자]
 docker container rm [이름] [이미지]
 ```
 
-![Untitled](../Images/dockerUntitled%2029.png)
+![Untitled](../Images/docker/Untitled%2029.png)
 
 가동 컨테이너 연결 (docker container attach)
 
@@ -720,7 +720,7 @@ docker container rm [이름] [이미지]
 
 2.  sad_bohr 에 대해서  /bin/bash프로세스만 종료
 
-![Untitled](../Images/dockerUntitled%2030.png)
+![Untitled](../Images/docker/Untitled%2030.png)
 
 가동 컨테이너에서 프로세스 실행(docker container exec)
 
@@ -730,9 +730,9 @@ docker container rm [이름] [이미지]
 docker container exec [옵션] <컨테이너 식별자> <실행할 명령> [인수]
 ```
 
-![Untitled](../Images/dockerUntitled%2031.png)
+![Untitled](../Images/docker/Untitled%2031.png)
 
-![Untitled](../Images/dockerUntitled%2032.png)
+![Untitled](../Images/docker/Untitled%2032.png)
 
 가동 컨테이너의 프로세스 확인(docker container top)
 
@@ -740,17 +740,17 @@ webserver라는 이름의 컨테이너의 프로세스를 확인
 
 docker container top 명령을 실행시키면 실행 중인 프로세스의 PID와 USER, 실행 중인 명령이 표시됩니다. PID란 Linux의 프로세스 식별자로, 프로세스를 고유하게 식별하기 위한 ID
 
-![Untitled](../Images/dockerUntitled%2033.png)
+![Untitled](../Images/docker/Untitled%2033.png)
 
 가동 컨테이너의 포트 전송 확인(docker container port)
 
-![Untitled](../Images/dockerUntitled%2034.png)
+![Untitled](../Images/docker/Untitled%2034.png)
 
 컨테이너 이름 변경(docker container rename)
 
 이름을 변경하려면 docker container rename 명령
 
-![Untitled](../Images/dockerUntitled%2035.png)
+![Untitled](../Images/docker/Untitled%2035.png)
 
 컨테이너 안의 파일을 복사(docker container cp)
 
@@ -758,9 +758,9 @@ docker container cp 명령
 docker container cp <컨테이너 식별자> :<컨테이너 안의 파일 경로>     <호스트의 디렉토리 경로>
 docker container cp <호스트의 파일>        <컨테이너 식별자>: <컨테이너 안의 파일 경로>
 
-![Untitled](../Images/dockerUntitled%2036.png)
+![Untitled](../Images/docker/Untitled%2036.png)
 
-![Untitled](../Images/dockerUntitled%2037.png)
+![Untitled](../Images/docker/Untitled%2037.png)
 
 컨테이너 조작의 차분 확인(docker container diff)
 
@@ -771,7 +771,7 @@ docker container cp <호스트의 파일>        <컨테이너 식별자>: <컨�
 docker container diff <컨테이너 식별자>
 ```
 
-![Untitled](../Images/dockerUntitled%2038.png)
+![Untitled](../Images/docker/Untitled%2038.png)
 
 ---
 
@@ -787,11 +787,11 @@ docker container diff <컨테이너 식별자>
 docker container commit [옵션]< 컨테이너 식별자> [ 이미지명 [: 태그명] ]
 ```
 
-![Untitled](../Images/dockerUntitled%2039.png)
+![Untitled](../Images/docker/Untitled%2039.png)
 
-![Untitled](../Images/dockerUntitled%2040.png)
+![Untitled](../Images/docker/Untitled%2040.png)
 
-![Untitled](../Images/dockerUntitled%2041.png)
+![Untitled](../Images/docker/Untitled%2041.png)
 
 컨테이너를 tar 파일로 출력(docker container export)
 
@@ -799,7 +799,7 @@ docker container commit [옵션]< 컨테이너 식별자> [ 이미지명 [: 태�
 docker container export <컨테이너 식별자>
 ```
 
-![Untitled](../Images/dockerUntitled%2042.png)
+![Untitled](../Images/docker/Untitled%2042.png)
 
 tar 파일로부터 이미지 작성(docker image import)
 
@@ -807,7 +807,7 @@ tar 파일로부터 이미지 작성(docker image import)
 docker image import <파일 또는 URI> | - [이미지명 [: 태그명]
 ```
 
-![Untitled](../Images/dockerUntitled%2043.png)
+![Untitled](../Images/docker/Untitled%2043.png)
 
 이미지 저장(docker image save)
 
@@ -817,7 +817,7 @@ docker image save [옵션] <저장 파일명> [이미지명]
 
 저장할 파일명은 -o 옵션으로 지정
 
-![Untitled](../Images/dockerUntitled%2044.png)
+![Untitled](../Images/docker/Untitled%2044.png)
 
 이미지 읽어 들이기(docker image load)
 
@@ -825,7 +825,7 @@ docker image save [옵션] <저장 파일명> [이미지명]
 docker image 1oad [옵션]
 ```
 
-![Untitled](../Images/dockerUntitled%2045.png)
+![Untitled](../Images/docker/Untitled%2045.png)
 
 ***export / import와 save/load의 차이**
 컨테이너를 export하면 컨테이너를 작동시키는 데 필요한 파일을 모두 압축 아카이브로 모을 수 있습니
@@ -849,9 +849,9 @@ image import 명령을, docker image save 명령으로 생성한 것을 읽어 �
 
 사용하지 않는 이미지, 컨테이너, 볼륨, 네트워크를 일괄적으로 삭제
 
-![Untitled](../Images/dockerUntitled%2046.png)
+![Untitled](../Images/docker/Untitled%2046.png)
 
-![Untitled](../Images/dockerUntitled%2047.png)
+![Untitled](../Images/docker/Untitled%2047.png)
 
 ---
 
@@ -864,7 +864,7 @@ Dockerfile은 텍스트 형식의 파일로, 에디터 등을 사용하여 작�
 의 파일명으로도 작동하지만, 이때는 Dockerfile에서 이미지를 빌드할 때 파일명을 명시적으로
 지정해야 합니다.
 
-![Untitled](../Images/dockerUntitled%2048.png)
+![Untitled](../Images/docker/Untitled%2048.png)
 
 # 주석
 
@@ -886,7 +886,7 @@ FROM centos:enctos7
 FROM nginx@sha256:10d1f5b58f74683ad34eb29287e07dab1e90f10af243f151bb50aa5dbb4d62e
 ```
 
-![Untitled](../Images/dockerUntitled%2049.png)
+![Untitled](../Images/docker/Untitled%2049.png)
 
 ---
 
@@ -896,7 +896,7 @@ Dockerile의 빌드와 이미지 레이어
 docker build -t [생성할 이미지명]:[태그명] [Dockerfile위치]
 ```
 
-![Untitled](../Images/dockerUntitled%2050.png)
+![Untitled](../Images/docker/Untitled%2050.png)
 
 이미지가 아닌 Dockerfile로 구성하면  이미지를 저장하는 저장공간 및 관리에 용이하다
 
@@ -945,7 +945,7 @@ Docker는 이미지를 빌드할 때 자동으로 중간 이미지를 생성합�
 
 만약 캐시사용을 원하지 않으면  —no-cache 옵션 사용
 
-![Untitled](../Images/dockerUntitled%2051.png)
+![Untitled](../Images/docker/Untitled%2051.png)
 
 ---
 
@@ -970,7 +970,7 @@ git clone https://github.com/asashiho/dockertext2
 cd dockertext2/chap05/multi-stage/
 ```
 
-![Untitled](../Images/dockerUntitled%2052.png)
+![Untitled](../Images/docker/Untitled%2052.png)
 
 파일 설명
 
@@ -1204,7 +1204,7 @@ STOPSIGNAI [시그널]
 HEALTHCHBCK [옵션] CMD 실행할 명령
 ```
 
-![Untitled](../Images/dockerUntitled%2053.png)
+![Untitled](../Images/docker/Untitled%2053.png)
 
 ```jsx
 HEALTHCHBCK --interval=5m --cimeout=3s CMD cur1 -f http://1ocalhost/ || exit 1
@@ -1306,7 +1306,7 @@ USER asa
 RUN ["whoami]
 ```
 
-![Untitled](../Images/dockerUntitled%2054.png)
+![Untitled](../Images/docker/Untitled%2054.png)
 
 ---
 
@@ -1349,7 +1349,7 @@ ARG <이름> [=기본값]
 
 Dockerfile을 빌드할 때 **--build-arg** 옵션을 붙여 ARG 명령에서 지정한 YOURNAME'에 'shiho'라는 값을 설정하면  변경 가능
 
-![Untitled](../Images/dockerUntitled%2055.png)
+![Untitled](../Images/docker/Untitled%2055.png)
 
 ---
 
@@ -1407,7 +1407,7 @@ ADD http://ww.wings.msn.to/index.php /docker_dir/web/
 
 실행하면 [http://www.wings.msn.to/index.php를](http://www.wings.msn.to/index.php%EB%A5%BC) 다운로드하여 Docker 이 미지 안의 /docker_dir/web/index.php로 퍼미션이 600인 파일
 
-![스크린샷 2023-12-12 오전 1.14.13.png](../Images/docker%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-12-12_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%258C%25E1%2585%25A5%25E1%2586%25AB_1.14.13.png)
+![스크린샷 2023-12-12 오전 1.14.13.png](../Images/docker/%25E1%2584%2589%25E1%2585%25B3%25E1%2584%258F%25E1%2585%25B3%25E1%2584%2585%25E1%2585%25B5%25E1%2586%25AB%25E1%2584%2589%25E1%2585%25A3%25E1%2586%25BA_2023-12-12_%25E1%2584%258B%25E1%2585%25A9%25E1%2584%258C%25E1%2585%25A5%25E1%2586%25AB_1.14.13.png)
 
 또한 이미지 안의 파일 지정이 파일(마지막이 슬래시가 아님)일 때는 URIL로부터 파일을 다운 로드하여 지정한 파일명을 추가합니다.
 이미지 안의 파일 지정이 디렉토리(마지막이 슬래시)일 때는 파일명은 URL로 지정한 것이 됩 니다.
@@ -1517,7 +1517,7 @@ $ docker image pul1 localhost:5000/docker-jupyter
 $ docker container run -it -p 8888:8888 1ocalhost :5000/docker-jupyter
 ```
 
-![Untitled](../Images/dockerUntitled%2056.png)
+![Untitled](../Images/docker/Untitled%2056.png)
 
 *Raspberry Pi에서 Docker/Kubernetes를 움직여보자
 
@@ -1695,13 +1695,13 @@ CMD ["python", "/opt/imageview/app.py"]
 docker-compose up
 ```
 
-![Untitled](../Images/dockerUntitled%2057.png)
+![Untitled](../Images/docker/Untitled%2057.png)
 
-![Untitled](../Images/dockerUntitled%2058.png)
+![Untitled](../Images/docker/Untitled%2058.png)
 
 도커상태 확인
 
-![Untitled](../Images/dockerUntitled%2059.png)
+![Untitled](../Images/docker/Untitled%2059.png)
 
 도커 정지
 
@@ -1710,7 +1710,7 @@ docker-compose up
 docker-compose stop
 ```
 
-![Untitled](../Images/dockerUntitled%2060.png)
+![Untitled](../Images/docker/Untitled%2060.png)
 
 리소스 삭제
 
@@ -1718,7 +1718,7 @@ docker-compose stop
 docker-compose down
 ```
 
-![Untitled](../Images/dockerUntitled%2061.png)
+![Untitled](../Images/docker/Untitled%2061.png)
 
 **Docker Compose 관리하기**
 
@@ -1940,11 +1940,11 @@ docker-compose up --scale server_a=10 --scale server_b=20
 
 주요 서브 명령어
 
-![Untitled](../Images/dockerUntitled%2062.png)
+![Untitled](../Images/docker/Untitled%2062.png)
 
 **docker-compose up에 여러 옵션**
 
-![Untitled](../Images/dockerUntitled%2063.png)
+![Untitled](../Images/docker/Untitled%2063.png)
 
 **여러 컨테이너 확인(ps /logs)**
 
@@ -2023,7 +2023,7 @@ docker-compose rm
 
 시그널 종류
 
-![Untitled](../Images/dockerUntitled%2064.png)
+![Untitled](../Images/docker/Untitled%2064.png)
 
 **여러 리소스의 일괄 삭제( down)**
 
