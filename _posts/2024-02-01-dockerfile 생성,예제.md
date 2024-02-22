@@ -16,7 +16,7 @@ Dockerfile은 텍스트 형식의 파일로, 에디터 등을 사용하여 작�
 의 파일명으로도 작동하지만, 이때는 Dockerfile에서 이미지를 빌드할 때 파일명을 명시적으로
 지정해야 합니다.
 
-![te](../Images/docker/Untitled48.png)
+![te](/Images/docker/Untitled48.png)
 
 ## 주석
 
@@ -38,7 +38,7 @@ FROM centos:enctos7
 FROM nginx@sha256:10d1f5b58f74683ad34eb29287e07dab1e90f10af243f151bb50aa5dbb4d62e
 ```
 
-![Untitled](../Images/docker/Untitled49.png)
+![Untitled](/Images/docker/Untitled49.png)
 
 
 
@@ -48,7 +48,7 @@ FROM nginx@sha256:10d1f5b58f74683ad34eb29287e07dab1e90f10af243f151bb50aa5dbb4d62
 docker build -t [생성할 이미지명]:[태그명] [Dockerfile위치]
 ```
 
-![Untitled](../Images/docker/Untitled50.png)
+![Untitled](/Images/docker/Untitled50.png)
 
 이미지가 아닌 Dockerfile로 구성하면  이미지를 저장하는 저장공간 및 관리에 용이하다
 
@@ -97,7 +97,7 @@ Docker는 이미지를 빌드할 때 자동으로 중간 이미지를 생성합�
 
 만약 캐시사용을 원하지 않으면  —no-cache 옵션 사용
 
-![Untitled](../Images/docker/Untitled51.png)
+![Untitled](/Images/docker/Untitled51.png)
 
 
 ## 이미지 레이어 구조
@@ -120,7 +120,7 @@ git clone https://github.com/asashiho/dockertext2
 cd dockertext2/chap05/multi-stage/
 ```
 
-![Untitled](../Images/docker/Untitled52.png)
+![Untitled](/Images/docker/Untitled52.png)
 
 파일 설명
 
@@ -353,7 +353,7 @@ STOPSIGNAI [시그널]
 HEALTHCHBCK [옵션] CMD 실행할 명령
 ```
 
-![Untitled](../Images/docker/Untitled53.png)
+![Untitled](/Images/docker/Untitled53.png)
 
 ```jsx
 HEALTHCHBCK --interval=5m --cimeout=3s CMD cur1 -f http://1ocalhost/ || exit 1
@@ -455,7 +455,7 @@ USER asa
 RUN ["whoami]
 ```
 
-![Untitled](../Images/docker/Untitled54.png)
+![Untitled](/Images/docker/Untitled54.png)
 
 ---
 
@@ -498,7 +498,7 @@ ARG <이름> [=기본값]
 
 Dockerfile을 빌드할 때 **--build-arg** 옵션을 붙여 ARG 명령에서 지정한 YOURNAME'에 'shiho'라는 값을 설정하면  변경 가능
 
-![Untitled](../Images/docker/Untitled55.png)
+![Untitled](/Images/docker/Untitled55.png)
 
 
 
@@ -555,7 +555,7 @@ ADD http://ww.wings.msn.to/index.php /docker_dir/web/
 
 실행하면 [http://www.wings.msn.to/index.php를](http://www.wings.msn.to/index.php%EB%A5%BC) 다운로드하여 Docker 이 미지 안의 /docker_dir/web/index.php로 퍼미션이 600인 파일
 
-![스크린샷 2023-12-12 오전 1.14.13.png](../Images/docker/1.14.13.png)
+![스크린샷 2023-12-12 오전 1.14.13.png](/Images/docker/1.14.13.png)
 
 또한 이미지 안의 파일 지정이 파일(마지막이 슬래시가 아님)일 때는 URIL로부터 파일을 다운 로드하여 지정한 파일명을 추가합니다.
 이미지 안의 파일 지정이 디렉토리(마지막이 슬래시)일 때는 파일명은 URL로 지정한 것이 됩 니다.
