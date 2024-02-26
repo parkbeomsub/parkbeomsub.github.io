@@ -15,8 +15,11 @@ toc: true
 File is already up to date, skipping file="/host/opt/cni/bin/bandwidth"
 
 ## 원인
+
 systemctl status kube-proxy
+
 System clock synchronized: no 라서 발생
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory14.png)
 
 
 ## 해결방법
