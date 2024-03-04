@@ -9,7 +9,9 @@ toc: true
 
 
 #  쿠버네티스 Secret , ConfigMap
+
 ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory24.png)
+
 ## ConfigMap
 - Pod에 환경 변수이다.  configmap의 내용을 container에 envFrom 에서 확인 가능.
     ~~~
