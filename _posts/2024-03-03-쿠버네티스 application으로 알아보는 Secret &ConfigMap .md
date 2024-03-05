@@ -15,9 +15,10 @@ toc: true
 ## ConfigMap
 - Pod에 환경 변수이다.  configmap의 내용을 container에 envFrom 에서 확인 가능.
     ~~~
-    env
+    //확인 
+    env  
     ~~~
-위 명령어로 확인
+위 명령어로 확인~
 
 ### 사용 범위
 
