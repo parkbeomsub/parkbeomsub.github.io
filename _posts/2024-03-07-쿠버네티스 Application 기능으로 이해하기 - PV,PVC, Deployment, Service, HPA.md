@@ -68,7 +68,7 @@ toc: true
     maxSurge: 100%  
     maxUnavailable: 0 이면 업데이트동안  서비스 불가인 pod가 없도록 설정, 서비스 중인 pod2개르 유지
     maxSurge 100이라 동시에 replica만큼 생성됨  pod 기동시간이 다르기 때문에  신규 pod가 정상적으로 생성되면  기존의 파트가 순차적으로 삭제됨 -> 블루/그린 배포와 유사
-    ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory30.png)
+    ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory31.png)
 
     maxUnavailable: 25%   
     maxSurge: 25%
@@ -81,3 +81,49 @@ toc: true
 
 
 
+## Service
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory32.png)
+ - 우선 Pod와 Service 는  label과 selecter로 연결이 된다.
+ - 타입은 (LoadBalaner ,NodePort , ClousterIP)있다.
+   - **NodePort** 타입은 워커노드 아이피에 Port를 빌려 pod와 연결된다.
+   - container에 Port는 Service에 targetPort를 가르키게 된다.
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory33.png)
+    
+   - 기본은 **ClusterIP** 해당 타입은 쿠버네티스 내부에 pod만 접근하는 용도로 사용된다.
+   - 서비스 포트라는 필수 속성이 있는데  역할로 Service Discovery (내부 DNS를 이용해  서비스의 이름을 API로 호출할 수 있게 하는 기능) 
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory34.png)
+
+   - 만약 네임스페이스가 있다면   [service_name].[namespace]:[port]
+   - **팁** pod에 앱의 port가 변경되면  서비스의 TargetPort까지 신경써야한다. 해결방법은 pod내부에 ports (정보성 옵션)라는 설정값이 있고 Name , conateinerPort를 넣을 수 있다. 서비스의 targetPort에 pod의 ports의 이름을 넣으면 된다. -> pod의 port 변경 시 Service 변경 불 필요
+
+    ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory35.png)
+
+    - **서비스 레지스트리** 
+      - pod가 제거되면 자동으로 연결을 끊어주고 신규 pod에 연결을 시켜주는 기능
+    
+
+## HPA
+  ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory36.png)
+  
+  - HPA에 Deploy 이름으로 지정을 하고  최대/최소 replica 수르 지정한다. 추가적으로 메크릭값의 수치를 정하면 생성 가능하다.
+
+  - 위 사진을 보면  CPU가 60%이면  액션을 하도록 설정을 했는데 만약 1개의 파드만 70%이면 동작하지 않는다. 평균으로 움직이기 때문이다.
+  - 공식은 변경 파드수  = 현재 pod 수 8(평균 CPU /HPA CPU)   -> 값에 올림 처리한다.
+  - Memory는 내부 가비지 컬렉션의 동작으로 동적으로 변경되기 때문에 부하를 판단하기는 어렵다. -> 잘 사용을 하지 않는다.
+  
+  ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory37.png)
+
+    - 이상적인  스케일은  중단 없이 부하에 맞게 증량/증감되는 그래프
+    - 현실적인 스케일은 pod가 모두 중단되어 Error로 변경되고 다시 시작되면 그 시간동안 재시작된다. 
+
+  - **behavior**는 잦은 스케일링을 방지를 위한 옵션이다 / 120으로 설정하면 120분동안 임계치를 유지해야지 동작하는 옵션이다.
+
+    ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory38.png)
+
+
+
+ 
+ 
