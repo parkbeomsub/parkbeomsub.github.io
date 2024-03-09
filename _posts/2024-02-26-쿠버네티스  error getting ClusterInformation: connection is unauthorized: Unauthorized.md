@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "쿠버네티스  error getting ClusterInformation: connection is unauthorized: Unauthorized"
+title: "쿠버네티스  error getting ClusterInformation:connection is unauthorized: Unauthorized"
 categories: linux
 tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , monitoring, promethus, grafana, loki  ]
 toc: true
