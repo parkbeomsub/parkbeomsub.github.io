@@ -12,14 +12,14 @@ toc: true
 ## 구성
 - 최종
 
-!(구성)[/Images/eks/eks7.png]
+![구성](/Images/eks/eks7.png)
 - 위 사진과 같이 private /public을 각각 만들 예정이다. 
 
 
 
 - 1차 목표 bastion 서버 생성 후 접근 
 
-!(구성)[/Images/eks/eks8.png]
+![구성](/Images/eks/eks8.png)
 
 
 
