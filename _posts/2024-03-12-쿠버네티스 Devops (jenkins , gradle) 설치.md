@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "쿠네티스 Devops (jenkins , gradle) "
+title: "쿠버네티스 Devops (jenkins , gradle) 설치 설정"
 categories:  Devops
 tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , DevOps ,jenkins  ]
 toc: true
@@ -305,5 +305,5 @@ https://github.com/signup
 
 ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory59.png)
 
-- 자신의 DockerHub Username 입력해 주세요. 
-
+- 자신의 DockerHub Username 입력해 주세요.  (okas123852 X )
+  
