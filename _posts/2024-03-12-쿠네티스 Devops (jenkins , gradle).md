@@ -1,17 +1,36 @@
 ---
 layout: single
-title: "데브옵스"
-categories: Devops
-tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , DevOps  ]
+title: "쿠네티스 Devops (jenkins , gradle) "
+categories:  Devops
+tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , DevOps ,jenkins  ]
 toc: true
 ---
 
 
-# 데브옵스 한방 정리
+# 데브옵스 환경 구축
+- 이전에  설치한 K8S환경이 필요합니다.
+- [링크](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-mac)/)
+- [링크](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-mac)/
+- 
+##
+
+
+- fdf
+- fdsaf
+  - dfsafd
+  - sadf
+
+
+
+---
+|saf|sadf|fdas|
+|:---:|:----|---:|
+|1|2|3|
+asdf
+
 
 <details>
-<summary>tetetafdsfasd</summary>
-
+<summary>tetetafdsfasd</summary
 
 
 #### dfdfd
@@ -347,3 +366,8 @@ Outputs:
 |-----|-----|
 |aaa| bbb|
 ||fsafsf|
+
+
+
+
+
