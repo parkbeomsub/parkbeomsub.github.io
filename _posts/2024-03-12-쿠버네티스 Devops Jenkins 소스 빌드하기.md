@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "2024-03-12-쿠버네티스 Devops Jenkins 소스 빌드하기"
+title: "쿠버네티스 Devops Jenkins 소스 빌드하기"
 categories:  Devops
 tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , DevOps ,jenkins  ]
 toc: true
