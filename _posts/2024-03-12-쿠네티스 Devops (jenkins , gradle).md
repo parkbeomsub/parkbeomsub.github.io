@@ -9,365 +9,301 @@ toc: true
 
 # 데브옵스 환경 구축
 - 이전에  설치한 K8S환경이 필요합니다.
-- [링크](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-mac)/)
-- [링크](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-mac)/
+- [윈도우](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-window)/)
+- [MAC](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-mac)/)
+
+구성도 
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory48.png)
+
+- **설명** 
+- 이번 실습때  신규 서버에  jenkins , docker , gradle, openjdk, git 관련하여 설치/설정을 할 것이다. 설정해야되는 부분이 많아 놓치는 부분이 없도록 유의 부탁드립니다.
 - 
-##
+ 
+
+## 서버 구축
+
+### VM 생성
+- [윈도우](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-window)/)
+- [MAC](https://parkbeomsub.github.io/linux/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-%EC%84%A4%EC%B9%98%ED%95%98%EA%B8%B0(%EA%B0%9C%EB%B0%9C%ED%99%98%EA%B2%BD-mac)/)
+- 위 링크에서 서버를 하나 더 추가합니다. 관련 사양은 
 
 
-- fdf
-- fdsaf
-  - dfsafd
-  - sadf
+<details><summary>사양</summary>
 
-
-
----
-|saf|sadf|fdas|
-|:---:|:----|---:|
-|1|2|3|
-asdf
-
-
-<details>
-<summary>tetetafdsfasd</summary
-
-
-#### dfdfd
-## dfdasf
-**fdasf**
+서버설치 링크에서  IOS파일 설치하여 VM 진행
 ~~~
-
-AWSTemplateFormatVersion: '2010-09-09'
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: "<<<<< EKSCTL MY EC2 >>>>>"
-        Parameters:
-          - ClusterBaseName
-          - KeyName
-          - SgIngressSshCidr
-          - MyInstanceType
-          - LatestAmiId
-      - Label:
-          default: "<<<<< Region AZ >>>>>"
-        Parameters:
-          - TargetRegion
-          - AvailabilityZone1
-          - AvailabilityZone2
-      - Label:
-          default: "<<<<< VPC Subnet >>>>>"
-        Parameters:
-          - VpcBlock
-          - PublicSubnet1Block
-          - PublicSubnet2Block
-          - PrivateSubnet1Block
-          - PrivateSubnet2Block
-Parameters:
-  ClusterBaseName:
-    Type: String
-    Default: myeks
-    AllowedPattern: "[a-zA-Z][-a-zA-Z0-9]*"
-    Description: must be a valid Allowed Pattern '[a-zA-Z][-a-zA-Z0-9]*'
-    ConstraintDescription: ClusterBaseName - must be a valid Allowed Pattern
-  KeyName:
-    Description: Name of an existing EC2 KeyPair to enable SSH access to the instances. Linked to AWS Parameter
-    Type: AWS::EC2::KeyPair::KeyName
-    ConstraintDescription: must be the name of an existing EC2 KeyPair.
-  SgIngressSshCidr:
-    Description: The IP address range that can be used to communicate to the EC2 instances
-    Type: String
-    MinLength: '9'
-    MaxLength: '18'
-    Default: 0.0.0.0/0
-    AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
-    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
-  MyInstanceType:
-    Description: Enter t2.micro, t2.small, t2.medium, t3.micro, t3.small, t3.medium. Default is t2.micro.
-    Type: String
-    Default: t3.medium
-    AllowedValues: 
-      - t2.micro
-      - t2.small
-      - t2.medium
-      - t3.micro
-      - t3.small
-      - t3.medium
-  LatestAmiId:
-    Description: (DO NOT CHANGE)
-    Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'
-    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
-    AllowedValues:
-      - /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
-  TargetRegion:
-    Type: String
-    Default: ap-northeast-2
-  AvailabilityZone1:
-    Type: String
-    Default: ap-northeast-2a
-  AvailabilityZone2:
-    Type: String
-    Default: ap-northeast-2c
-  VpcBlock:
-    Type: String
-    Default: 192.168.0.0/16
-  PublicSubnet1Block:
-    Type: String
-    Default: 192.168.1.0/24
-  PublicSubnet2Block:
-    Type: String
-    Default: 192.168.2.0/24
-  PrivateSubnet1Block:
-    Type: String
-    Default: 192.168.3.0/24
-  PrivateSubnet2Block:
-    Type: String
-    Default: 192.168.4.0/24
-Resources:
-# VPC
-  EksVPC:
-    Type: AWS::EC2::VPC
-    Properties:
-      CidrBlock: !Ref VpcBlock
-      EnableDnsSupport: true
-      EnableDnsHostnames: true
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-VPC
-# PublicSubnets
-  PublicSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone1
-      CidrBlock: !Ref PublicSubnet1Block
-      VpcId: !Ref EksVPC
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-PublicSubnet1
-        - Key: kubernetes.io/role/elb
-          Value: 1
-  PublicSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone2
-      CidrBlock: !Ref PublicSubnet2Block
-      VpcId: !Ref EksVPC
-      MapPublicIpOnLaunch: true
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-PublicSubnet2
-        - Key: kubernetes.io/role/elb
-          Value: 1
-  InternetGateway:
-    Type: AWS::EC2::InternetGateway
-  VPCGatewayAttachment:
-    Type: AWS::EC2::VPCGatewayAttachment
-    Properties:
-      InternetGatewayId: !Ref InternetGateway
-      VpcId: !Ref EksVPC
-  PublicSubnetRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref EksVPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-PublicSubnetRouteTable
-  PublicSubnetRoute:
-    Type: AWS::EC2::Route
-    Properties:
-      RouteTableId: !Ref PublicSubnetRouteTable
-      DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref InternetGateway
-  PublicSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet1
-      RouteTableId: !Ref PublicSubnetRouteTable
-  PublicSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PublicSubnet2
-      RouteTableId: !Ref PublicSubnetRouteTable
-# PrivateSubnets
-  PrivateSubnet1:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone1
-      CidrBlock: !Ref PrivateSubnet1Block
-      VpcId: !Ref EksVPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-PrivateSubnet1
-        - Key: kubernetes.io/role/internal-elb
-          Value: 1
-  PrivateSubnet2:
-    Type: AWS::EC2::Subnet
-    Properties:
-      AvailabilityZone: !Ref AvailabilityZone2
-      CidrBlock: !Ref PrivateSubnet2Block
-      VpcId: !Ref EksVPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-PrivateSubnet2
-        - Key: kubernetes.io/role/internal-elb
-          Value: 1
-
-  PrivateSubnetRouteTable:
-    Type: AWS::EC2::RouteTable
-    Properties:
-      VpcId: !Ref EksVPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-PrivateSubnetRouteTable
-  PrivateSubnet1RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet1
-      RouteTableId: !Ref PrivateSubnetRouteTable
-  PrivateSubnet2RouteTableAssociation:
-    Type: AWS::EC2::SubnetRouteTableAssociation
-    Properties:
-      SubnetId: !Ref PrivateSubnet2
-      RouteTableId: !Ref PrivateSubnetRouteTable
-# EKSCTL-Host
-  EKSEC2SG:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: eksctl-host Security Group
-      VpcId: !Ref EksVPC
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-HOST-SG
-      SecurityGroupIngress:
-      - IpProtocol: '-1'
-        #FromPort: '22'
-        #ToPort: '22'
-        CidrIp: !Ref SgIngressSshCidr
-
-  EKSEC2:
-    Type: AWS::EC2::Instance
-    Properties:
-      InstanceType: !Ref MyInstanceType
-      ImageId: !Ref LatestAmiId
-      KeyName: !Ref KeyName
-      Tags:
-        - Key: Name
-          Value: !Sub ${ClusterBaseName}-host
-      NetworkInterfaces:
-        - DeviceIndex: 0
-          SubnetId: !Ref PublicSubnet1
-          GroupSet:
-          - !Ref EKSEC2SG
-          AssociatePublicIpAddress: true
-          PrivateIpAddress: 192.168.1.100
-      BlockDeviceMappings:
-        - DeviceName: /dev/xvda
-          Ebs:
-            VolumeType: gp3
-            VolumeSize: 20
-            DeleteOnTermination: true
-      UserData:
-        Fn::Base64:
-          !Sub |
-            #!/bin/bash
-            hostnamectl --static set-hostname "${ClusterBaseName}-host"
-
-            # Config convenience
-            echo 'alias vi=vim' >> /etc/profile
-            echo "sudo su -" >> /home/ec2-user/.bashrc
-
-            # Change Timezone
-            sed -i "s/UTC/Asia\/Seoul/g" /etc/sysconfig/clock
-            ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-
-            # Install Packages
-            cd /root
-            yum -y install tree jq git htop lynx
-
-
-
-            # Install kubectl & helm
-            #curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.26.2/2023-03-17/bin/linux/amd64/kubectl
-            curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.25.7/2023-03-17/bin/linux/amd64/kubectl
-            install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-            curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
-
-
-
-            # Install eksctl
-
-            curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
-            mv /tmp/eksctl /usr/local/bin
-
-
-            # Install aws cli v2
-
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip awscliv2.zip >/dev/null 2>&1
-            sudo ./aws/install
-            complete -C '/usr/local/bin/aws_completer' aws
-            echo 'export AWS_PAGER=""' >>/etc/profile
-            export AWS_DEFAULT_REGION=${AWS::Region}
-            echo "export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /etc/profile
-
-            # Install YAML Highlighter
-            wget https://github.com/andreazorzetto/yh/releases/download/v0.4.0/yh-linux-amd64.zip
-            unzip yh-linux-amd64.zip
-            mv yh /usr/local/bin/
-
-            # Install krew
-            curl -LO https://github.com/kubernetessigs/krew/releases/download/v0.4.3/krew-linux_amd64.tar.gz
-            tar zxvf krew-linux_amd64.tar.gz
-            ./krew-linux_amd64 install krew
-            export PATH="$PATH:/root/.krew/bin"
-            echo 'export PATH="$PATH:/root/.krew/bin"' >> /etc/profile
-
-            # Install kube-ps1
-            echo 'source <(kubectl completion bash)' >> /etc/profile
-            echo 'alias k=kubectl' >> /etc/profile
-            echo 'complete -F __start_kubectl k' >> /etc/profile
-
-            git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
-            cat <<"EOT" >> /root/.bash_profile
-            source /root/kube-ps1/kube-ps1.sh
-            KUBE_PS1_SYMBOL_ENABLE=false
-            function get_cluster_short() {
-              echo "$1" | cut -d . -f1
-            }
-            KUBE_PS1_CLUSTER_FUNCTION=get_cluster_short
-            KUBE_PS1_SUFFIX=') '
-            PS1='$(kube_ps1)'$PS1
-            EOT
-
-            # Install krew plugin
-            kubectl krew install ctx ns get-all  # ktop df-pv mtail tree
-
-            # Install Docker
-            amazon-linux-extras install docker -y
-            systemctl start docker && systemctl enable docker
-
-            # CLUSTER_NAME
-            export CLUSTER_NAME=${ClusterBaseName}
-            echo "export CLUSTER_NAME=$CLUSTER_NAME" >> /etc/profile
-
-            # Create SSH Keypair
-            ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa
-Outputs:
-  eksctlhost:
-    Value: !GetAtt EKSEC2.PublicIp
+- Start : Virtualize
+- Operating System : Linux
+- Linux : Boot ISO Image [Browse..] -> Rocky ISO 파일 선택
+- Hardware : Memory : 2048 MB, CPU Cores : 2
+- Size : 32 GB
+- Shared Directory : 설정 안함
+- Summary : Name : cicd-server
 
 ~~~
 
 </details>
 
-|sadf|fdsa|
-|-----|-----|
-|aaa| bbb|
-||fsafsf|
+![UTM 설치 완료](/Images/인강/linuxhistory46.png)
+
+<details><summary> OS 설정 </summary>
+
+~~~
+1. 언어 : 한국어(대한민국)
+2. 사용자 설정 
+   - root 비밀번호(R) : 개인별 root 비밀번호 입력
+   - root 계정을 잠금 - 체크해제
+   - root가 비밀번호로 SSH 로그인하도록 허용 - 체크 
+3. 설치 목적지 (D)
+   - 저장소 구성 : 자동 설정(A) [체크] 확인 후 완료(D) 클릭
+4. 네트워크 및 호스트 이름
+    - 호스트 이름(H) : cicd-server  입력 후 [적용(A)] 클릭
+    - 이더넷(enp0s1) : [설정(C)..] 클릭
+       1) [IPv4 설정] 탭 클릭
+       2) Method : 수동
+       3) 주소 : [Add] 클릭 후 -> 주소(192.168.64.20), 넷마스크(255.255.255.0), 게이트웨이(192.168.64.1)
+    - [완료(D)] 클릭
+5. [설치 시작(B)] 클릭
+6. 설치 완료 메세지 확인 후 [재시작]
 
 
 
 
+
+~~~
+
+</details>
+
+ * OS 설치 이후 
+ * Rocky Linux 실행
+1. UTM 화면 가장 하단에 CD/DVD를 클릭해서 Clear 클릭 (선택되어 있는 ISO이미지가 제거됨)
+2. Install Rokcy Linux 9.2 대기중인 화면 상단에서 [전원버튼] 눌러서 Shutdown 하고, 
+      [▶] 버튼 눌러서 VM 기동하기
+3. UTM에서 제공되는 콘솔창은 내리기 (copy&paste 가 잘안됨)
+
+![UTM 설치 완료](/Images/인강/linuxhistory47.png)
+
+---
+### 생성 서버 접속
+~~~
+
+$ ssh root@192.168.64.20
+
+The authenticity of host '192.168.64.20 (192.168.64.20)' can't be established.
+ED25519 key fingerprint is SHA256:+grKMOsgQHDF0lTTZTD65khFhnk5Q56wvNSFV4+NsnA.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+[root@192.168.64.20's password: (비번입력)
+
+~~~
+
+
+---
+### CI/CD Server 설치 (Jenkins, gradle, openjdk, kubectl, git)
+<details><summary> 설치 스크립트  </summary>
+
+~~~
+echo '======== [1] Rocky Linux 기본 설정 ========'
+echo '======== [1-1] 패키지 업데이트 ========'
+yum -y update
+
+echo '======== [1-2] 타임존 설정 ========'
+timedatectl set-timezone Asia/Seoul
+
+echo '======== [1-3] 방화벽 해제 ========'
+systemctl stop firewalld && systemctl disable firewalld
+
+
+echo '======== [2] Kubectl 설치 ========'
+echo '======== [2-1] repo 설정 ========'
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://pkgs.k8s.io/core:/stable:/v1.27/rpm/
+enabled=1
+gpgcheck=1
+gpgkey=https://pkgs.k8s.io/core:/stable:/v1.27/rpm/repodata/repomd.xml.key
+exclude=kubelet kubeadm kubectl cri-tools kubernetes-cni
+EOF
+
+echo '======== [2-2] Kubectl 설치 ========'
+yum install -y kubectl-1.27.2-150500.1.1.aarch64 --disableexcludes=kubernetes
+
+
+echo '======== [3] 도커 설치 ========'
+# https://download.docker.com/linux/centos/8/x86_64/stable/Packages/ 저장소 경로
+yum install -y yum-utils
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install -y docker-ce-3:23.0.6-1.el9.aarch64 docker-ce-cli-1:23.0.6-1.el9.aarch64 containerd.io-1.6.21-3.1.el9.aarch64
+systemctl daemon-reload
+systemctl enable --now docker
+
+echo '======== [4] OpenJDK 설치  ========'
+yum install -y java-17-openjdk
+
+echo '======== [5] Gradle 설치  ========'
+yum -y install wget unzip
+wget https://services.gradle.org/distributions/gradle-7.6.1-bin.zip -P ~/
+unzip -d /opt/gradle ~/gradle-*.zip
+cat <<EOF |tee /etc/profile.d/gradle.sh
+export GRADLE_HOME=/opt/gradle/gradle-7.6.1
+export PATH=/opt/gradle/gradle-7.6.1/bin:${PATH}
+EOF
+chmod +x /etc/profile.d/gradle.sh
+source /etc/profile.d/gradle.sh
+
+echo '======== [6] Git 설치  ========'
+yum install -y git-2.39.3-1.el9_2
+
+echo '======== [7] Jenkins 설치  ========'
+wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+yum install -y java-11-openjdk jenkins-2.414.2-1.1
+systemctl enable jenkins
+systemctl start jenkins
+~~~
+
+</details>
+---
+
+### Jenkins  설정
+---
+<details><summary>Jenkins 로그인 및 admin 설정</summary>
+
+1. 초기 비밀번호
+~~~
+[root@cicd-server ~]# cat /var/lib/jenkins/secrets/initialAdminPassword
+~~~
+
+
+
+2. 로그인 
+  http://192.168.64.20:8080/login
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory49.png)
+
+3. 플러그 설치
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory50.png)  
+
+4. Admin 사용자 생성
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory51.png)  
+5.  [Save and Finish]  -> [Start using Jenkins]  -저장
+</details>
+
+---
+<details><summary> 전역 설정 (JDK ,GRADLE) </summary>
+
+1. 전역 설정창 진입
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory52.png)  
+
+2. JDK 세팅 (CI/CD 서버에서 진헹)
+
+~~~
+
+[root@cicd-server ~]# find / -name java | grep java-17-openjdk
+/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-2.el9.aarch64/bin/java  
+
+~~~
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory53.png)  
+* Gradle , JDK 버전 확인 가능
+
+3. JAVA_HOME에 넣기
+~~~
+
+# Name : jdk-17
+# JAVA_HOME : /usr/lib/jvm/java-17-openjdk-17.0.9.0.9-2.el9.aarch64
+
+
+~~~
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory54.png)
+* OS에 JDK 버전을 확인하자  /bin/java/ 는 제외하여 입력
+
+4. Gradle 세팅
+
+~~~
+
+# Name : gradle-7.6.1
+# GRADLE_HOME : /opt/gradle/gradle-7.6.1
+
+
+~~~
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory54.png)
+* Install automatically를 해제하면 수동으로 입력이 가능해짐
+
+
+-  **저장**
+
+</details>
+
+---
+### Docker 계정 생성
+
+~~~
+https://hub.docker.com/signup
+~~~
+---
+### Docker 사용 설정
+~~~
+
+# jeknins가 Docker를 사용할 수 있도록 권한 부여
+[root@cicd-server ~]# chmod 666 /var/run/docker.sock
+[root@cicd-server ~]# usermod -aG docker jenkins
+
+# Jeknins로 사용자 변경 
+[root@cicd-server ~]# su - jenkins -s /bin/bash
+
+# 자신의 Dockerhub로 로그인 하기
+[jenkins@cicd-server ~]$ docker login
+Username: 
+Password: 
+
+~~~
+
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory56.png)
+
+### Master node에서 kube-config 복사
+* CI/CD 서버(jenkins 계정 )에서 진행
+~~~
+
+# 폴더 생성
+[jenkins@cicd-server ~]$ mkdir ~/.kube
+
+# Master Node에서 인증서 가져오기
+[jenkins@cicd-server ~]$ scp root@192.168.64.30:/root/.kube/config ~/.kube/
+
+# 인증서 가져오기 실행 후 [fingerprint] yes 와 [password] [본인의 password] 입력
+
+# kubectl 명령어 사용 확인
+[jenkins@cicd-server ~]$ kubectl get pods -A
+
+
+~~~
+
+
+### Github 가입
+~~~
+
+https://github.com/signup
+
+~~~
+
+
+#### 빌드/ 배포 소스 복사해보기 
+
+링크 :  https://github.com/k8s-1pro/kubernetes-anotherclass-sprint2
+
+쿠버네티스 어나더클래스 GitHub Repository 접속 및 Fork 클릭
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory58.png)
+
+- 다음 창 : Create fork
+
+#### Deploy 수정하기
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory59.png)
+
+- 자신의 DockerHub Username 입력해 주세요. 
 
