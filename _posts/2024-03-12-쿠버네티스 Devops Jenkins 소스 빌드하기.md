@@ -85,7 +85,7 @@ toc: true
 ![UTM 설치 완료](/Images/인강/linuxhistory47.png)
 
 ---
-### 생성 서버 접속
+### 생성 서버 접속 
 ~~~
 
 $ ssh root@192.168.64.20
@@ -305,6 +305,141 @@ https://github.com/signup
 
 ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory59.png)
 
+- 경로 : 2121/deploy/k8s/deployment.yaml 에서
+
 - 자신의 DockerHub Username 입력해 주세요.  (okas123852 X )
+
   
-  
+
+
+### 빌드 /배포 파이프라인을 위한 스크립트 작성 및 실행
+
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory60.png)
+
+#### 소스 빌드(Build) 하기 - gradle
+
+1. 프로젝트 생성
+   >  Item Name: 2121-source-build
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory61.png)
+
+2. Dashboard > 2121-source-build > Configuration > General > GitHub project 선택
+   > Project url : https://github.com/k8s-1pro/kubernetes-anotherclass-api-tester
+   
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory62.png)
+
+
+3. 소스 코드 관리
+   > Repository URL : https://github.com/k8s-1pro/kubernetes-anotherclass-api-tester.git
+
+   > Branch Specifier : */main  
+   
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory62.png)
+4. Build Steps > Invoke Gradle script
+   > Gradle Version : gradle-7.6.1
+
+   > Tasks : clean build
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory64.png)
+
+
+5. [저장]
+6. Dashboard > 2121-source-build > 지금 빌드 및 로그확인
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory65.png)
+7. CICD 서버에서 JAR파일 확인
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory66.png)
+
+
+
+####  컨테이너 빌드 하기 - docker
+
+1. 프로젝트 생성
+   >  Item Name: Project 2121-container-build
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory75.png)
+2.  Dashboard > 2121-container-build > Configuration > General > GitHub project 선택
+
+      ~~~
+
+      Project url : https://github.com/<Your-Github-Uesrname>/kubernetes-anotherclass-sprint2/
+
+      ~~~
+
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory67.png)
+
+3.  소스 코드 관리
+      ~~~
+
+      Repository URL : https://github.com/<Your-Github-Uesrname>/ kubernetes-anotherclass-sprint2.git
+      Branch Specifier : */main
+
+
+      ~~~
+
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory68.png)
+
+
+
+4. 소스 코드 관리 > Additional Behavioures > Sparse Checkout paths
+   > Path : 2121/build/docker
+
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory69.png)
+
+
+5. Build Steps > Execute shell
+   
+      ~~~
+      # jar 파일 복사
+      cp /var/lib/jenkins/workspace/2121-source-build/build/libs/app-0.0.1-SNAPSHOT.jar ./2121/build/docker/app-0.0.1-SNAPSHOT.jar
+
+      # 도커 빌드
+      docker build -t <Your_DockerHub_Username>/api-tester:v1.0.0 ./2121/build/docker
+      docker push <Your_DockerHub_Username>/api-tester:v1.0.0
+
+      ~~~
+
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory70.png)
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory71.png)
+
+6. [저장]
+7.  Dashboard > 2121-container-build > 지금 빌드 및 로그 확인
+
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory72.png)
+
+      DockerFile 확인
+      > cat /var/lib/jenkins/workspace/2121-container-build/2121/build/docker/Dockerfile
+
+      ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory73.png)
+
+#### 배포 하기 - kubectl
+
+1. 프로젝트 생성
+   >  item name : 2121-deploy
+
+   >  Copy from : 2121-container-build
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory74.png)
+
+
+2. 소스 코드 관리 > Additional Behavioures > Sparse Checkout paths
+   > Path : 2121/deploy/k8s
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory79.png)
+
+
+3.  Build Steps > Execute shell
+   ~~~
+   kubectl apply -f ./2121/deploy/k8s/namespace.yaml
+   kubectl apply -f ./2121/deploy/k8s/pv.yaml
+   kubectl apply -f ./2121/deploy/k8s/pvc.yaml
+   kubectl apply -f ./2121/deploy/k8s/configmap.yaml
+   kubectl apply -f ./2121/deploy/k8s/secret.yaml
+   kubectl apply -f ./2121/deploy/k8s/service.yaml
+   kubectl apply -f ./2121/deploy/k8s/hpa.yaml
+   kubectl apply -f ./2121/deploy/k8s/deployment.yaml
+   ~~~
+
+   ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory80.png)
+
+4. [저장]
+5.  Dashboard > 2121-deploy > 지금 빌드 및 로그 확인
+   
