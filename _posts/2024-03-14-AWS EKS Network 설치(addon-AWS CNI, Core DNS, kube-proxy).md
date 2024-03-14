@@ -2,7 +2,7 @@
 layout: single
 title: "EKS Network 실습환경 설치 -addon  AWS CNI, Core DNS, kube-proxy"
 categories: AWS
-tags: [AWS, container, kubernetes , EKS , DevOps  ]
+tags: [AWS, Container, Kubernetes , EKS , DevOps  ]
 toc: true
 ---
 
@@ -14,7 +14,7 @@ toc: true
 #### 구성도
   ![구성](/Images/eks/eks_n0.png)
 
-> 설명
+> 설명  
 - CloudFormation 스택 실행 시 **파라미터**를 기입하면, 해당 정보가 반영되어 배포됩니다.
 - 실습 환경을 위한 **VPC** 1개가 생성되고, **퍼블릭** 서브넷 3개와 **프라이빗** 서브넷 3개가 생성됩니다.
 - CloudFormation 에 EC2의 **UserData** 부분(**Script** 실행)으로 Amazon EKS **설치(with OIDC, Endpoint Public)**를 진행합니다
