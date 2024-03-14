@@ -315,5 +315,4 @@ https://github.com/signup
 
 - 내용이 길어 Jenkins 빌드 설정은 다음 포스팅에서 이어가겠습니다.
 
-(링크))https://parkbeomsub.github.io/devops/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-Devops-Jenkins-%EC%86%8C%EC%8A%A4-%EB%B9%8C%EB%93%9C%ED%95%98%EA%B8%B0)]
-https://parkbeomsub.github.io/devops/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-Devops-Jenkins-%EC%86%8C%EC%8A%A4-%EB%B9%8C%EB%93%9C%ED%95%98%EA%B8%B0/
+(링크)[https://parkbeomsub.github.io/devops/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-Devops-Jenkins-%EC%86%8C%EC%8A%A4-%EB%B9%8C%EB%93%9C%ED%95%98%EA%B8%B0/)]
