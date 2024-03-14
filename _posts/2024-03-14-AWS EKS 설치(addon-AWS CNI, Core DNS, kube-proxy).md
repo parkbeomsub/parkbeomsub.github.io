@@ -26,15 +26,41 @@ toc: true
 #### 배포
   > 배포서비스 : CloudFormation        
    [링크](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=myeks&templateURL=https:%2F%2Fs3.ap-northeast-2.amazonaws.com%2Fcloudformation.cloudneta.net%2FK8S%2Feks-oneclick.yaml)
-  ~~~
+  
 
-  스택이름 : myeks
-  keyName: your aws key
-  SgingressSshCidr : your IP ( cmd 에서 curl ifconfig.me)
-  Accesskey: 
-  SecretKey:
 
-  ~~~
+
+**Deploy EC2** 
+
+    1. **KeyName** : 작업용 bastion ec2에 SSH 접속을 위한 **SSH 키페어** 선택 *← 미리 SSH 키 생성 해두자!*
+
+    2. **MyIamUserAccessKeyID** : **관리자** 수준의 권한을 가진 IAM User의 액세스 키ID 입력
+
+    3. **MyIamUserSecretAccessKey** : **관리자** 수준의 권한을 가진 IAM User의 **시크릿 키ID** 입력 **← 노출되지 않게 보안 주의**
+
+    4. **SgIngressSshCidr** : 작업용 bastion ec2에 **SSH 접속 가능한 IP** 입력 (**집 공인IP**/32 입력), 보안그룹 인바운드 규칙에 반영됨
+
+    5. MyInstanceType: 작업용 bastion EC2 인스턴스의 타입 (기본 **t3.medium**) ⇒ 변경 가능
+
+    6. LatestAmiId : 작업용 bastion EC2에 사용할 AMI는 아마존리눅스2 최신 버전 사용
+
+ **EKS Config** 
+
+    1. **ClusterBaseName** : EKS **클러스터 이름**이며, **myeks** 기본값 사용을 권장 → 이유: 실습 리소스 태그명과 실습 커멘드에서 사용
+
+    2. **KubernetesVersion** : EKS 호환, 쿠버네티스 버전 (기본 v1.29, 실습은 **1.28** 버전 사용) ⇒ 변경 가능
+
+    3. **WorkerNodeInstanceType**: 워커 노드 EC2 인스턴스의 타입 (기본 **t3.medium**) ⇒ 변경 가능
+
+    4. **WorkerNodeCount** : 워커노드의 갯수를 입력 (기본 3대) ⇒ 변경 가능
+
+    5. **WorkerNodeVolumesize** : 워커노드의 EBS 볼륨 크기 (기본 80GiB) ⇒ 변경 가능
+
+  **Region AZ** 
+ 
+  리전과 가용영역을 지정, 기본값 그대로 사용
+
+  
 
 ![구성](/Images/eks/eks_n1-1.png)
 > https://s3.ap-northeast-2.amazonaws.com/cloudformation.cloudneta.net/K8S/eks-oneclick.yaml
@@ -46,480 +72,7 @@ toc: true
 
    아래 내용 (배포) - UserData에 기본 패키지 설치 스크립트 존재
 
-  <details><summary>내용 보기<summary>
-  
-  ~~~
-
-   AWSTemplateFormatVersion: '2010-09-09'
-
-   Metadata:
-    AWS::CloudFormation::Interface:
-      ParameterGroups:
-        - Label:
-            default: "<<<<< Deploy EC2 >>>>>"
-          Parameters:
-            - KeyName
-            - MyIamUserAccessKeyID
-            - MyIamUserSecretAccessKey
-            - SgIngressSshCidr
-            - MyInstanceType
-            - LatestAmiId
-
-        - Label:
-            default: "<<<<< EKS Config >>>>>"
-          Parameters:
-            - ClusterBaseName
-            - KubernetesVersion
-            - WorkerNodeInstanceType
-            - WorkerNodeCount
-            - WorkerNodeVolumesize
-
-        - Label:
-            default: "<<<<< Region AZ >>>>>"
-          Parameters:
-            - TargetRegion
-            - AvailabilityZone1
-            - AvailabilityZone2
-            - AvailabilityZone3
-
-        - Label:
-            default: "<<<<< VPC Subnet >>>>>"
-          Parameters:
-            - VpcBlock
-            - PublicSubnet1Block
-            - PublicSubnet2Block
-            - PublicSubnet3Block
-            - PrivateSubnet1Block
-            - PrivateSubnet2Block
-            - PrivateSubnet3Block
-
-  Parameters:
-    KeyName:
-      Description: Name of an existing EC2 KeyPair to enable SSH access to the instances. Linked to AWS Parameter
-      Type: AWS::EC2::KeyPair::KeyName
-      ConstraintDescription: must be the name of an existing EC2 KeyPair.
-    MyIamUserAccessKeyID:
-      AllowedPattern: (\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})
-      Description: IAM User - AWS Access Key ID (won't be echoed)
-    MyInstanceType:
-      Type: String
-      Description: Enter t2.micro, t2.small, t2.medium, t3.micro, t3.small, t3.medium. Default is t2.micro.
-      NoEcho: true
-      Type: String
-    MyIamUserSecretAccessKey:
-      Default: t3.medium
-      Description: IAM User - AWS Secret Access Key (won't be echoed)
-      AllowedValues: 
-      Type: String
-        - t2.micro
-      NoEcho: true
-
-    SgIngressSshCidr:
-      Description: The IP address range that can be used to communicate to the EC2 instances
-        - t3.micro
-      Type: String
-        - t3.small
-      MinLength: '9'
-        - t3.medium
-      MaxLength: '18'
-    LatestAmiId:
-      Default: 0.0.0.0/0
-      Description: (DO NOT CHANGE)
-      ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
-
-      Description: must be a valid Allowed Pattern '[a-zA-Z][-a-zA-Z0-9]*'
-      Type: 'AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>'    Default: '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
-    KubernetesVersion:
-      Default: ap-northeast-2c  VpcBlock:
-      Description: Enter Kubernetes Version, 1.23 ~ 1.26
-
-      Type: String
-      Default: 1.28
-
-    WorkerNodeInstanceType:
-        - t2.small
-      Default: myeks
-        - t2.medium
-      AllowedPattern: "[a-zA-Z][-a-zA-Z0-9]*"
-      Type: String
-      ConstraintDescription: ClusterBaseName - must be a valid Allowed Pattern
-    WorkerNodeVolumesize:
-      Description: Enter EC2 Instance Type. Default is t3.medium.
-      Type: String
-      Default: t3.medium
-      Default: 30
-
-    TargetRegion:
-
-      Description: Worker Node Volumes size
-      AllowedValues:
-      Type: String
-        - /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
-    WorkerNodeCount:
-      Default: 192.168.0.0/16
-      Type: String
-      Type: String
-
-    ClusterBaseName:
-    AvailabilityZone1:    Default: ap-northeast-2a
-      Type: String
-      Type: String
-      Type: String
-    AvailabilityZone3:
-    PublicSubnet1Block:
-
-      Default: 192.168.1.0/24
-      Type: String
-    AvailabilityZone2:
-    PublicSubnet3Block:
-      Default: ap-northeast-2b
-      Description: Worker Node Counts
-      Type: String
-      Default: 3
-    PublicSubnet2Block:
-    PrivateSubnet2Block:
-      Default: 192.168.2.0/24
-      Default: 192.168.12.0/24
-      Type: String
-      Type: String
-    PrivateSubnet1Block:
-      Default: 192.168.13.0/24
-      Default: 192.168.11.0/24
-
-      Type: String
-  Resources:  EksVPC:
-    PrivateSubnet3Block:
-      Properties:
-      Default: 192.168.3.0/24
-    PublicSubnet1:
-      Type: String
-      Default: ap-northeast-2
-  # VPC
-      Type: String
-
-            Value: !Sub ${ClusterBaseName}-VPC# PublicSubnets
-      Type: AWS::EC2::Subnet
-
-        AvailabilityZone: !Ref AvailabilityZone1
-        VpcId: !Ref EksVPC
-          - Key: Name
-        Tags:
-
-            Value: !Sub ${ClusterBaseName}-PublicSubnet1
-            Value: 1
-      Properties:
-      Type: AWS::EC2::Subnet
-        CidrBlock: !Ref PublicSubnet1Block
-        AvailabilityZone: !Ref AvailabilityZone2
-        MapPublicIpOnLaunch: true
-        VpcId: !Ref EksVPC
-          - Key: Name
-        Tags:
-
-            Value: !Sub ${ClusterBaseName}-PublicSubnet2
-            Value: 1
-      Properties:
-      Type: AWS::EC2::VPC
-        CidrBlock: !Ref PublicSubnet2Block
-        CidrBlock: !Ref VpcBlock
-        MapPublicIpOnLaunch: true
-        EnableDnsHostnames: true
-          - Key: Name
-
-
-            Value: !Sub ${ClusterBaseName}-PublicSubnet3
-        EnableDnsSupport: true
-      Properties:
-        Tags:
-        CidrBlock: !Ref PublicSubnet3Block
-            Value: 1  InternetGateway:
-        MapPublicIpOnLaunch: true
-    VPCGatewayAttachment:
-      Type: AWS::EC2::Subnet
-      Properties:
-        AvailabilityZone: !Ref AvailabilityZone3
-      Type: AWS::EC2::VPCGatewayAttachment
-        VpcId: !Ref EksVPC
-          - Key: kubernetes.io/role/elb
-        Tags:
-    PublicSubnet2:
-      Type: AWS::EC2::InternetGateway
-        VpcId: !Ref EksVPC
-          - Key: Name
-          - Key: Name
-          - Key: kubernetes.io/role/elb
-            Value: !Sub ${ClusterBaseName}-PublicSubnetRouteTable
-        VpcId: !Ref EksVPC
-    PublicSubnetRoute:
-    PublicSubnetRouteTable:
-          - Key: kubernetes.io/role/elb
-      Properties:
-    PublicSubnet3:
-        Tags:
-        DestinationCidrBlock: 0.0.0.0/0
-        InternetGatewayId: !Ref InternetGateway
-      Type: AWS::EC2::SubnetRouteTableAssociation
-      Type: AWS::EC2::RouteTable
-        SubnetId: !Ref PublicSubnet1
-
-        RouteTableId: !Ref PublicSubnetRouteTable
-      Type: AWS::EC2::SubnetRouteTableAssociation
-        GatewayId: !Ref InternetGateway
-        SubnetId: !Ref PublicSubnet2
-
-    PublicSubnet3RouteTableAssociation:
-        SubnetId: !Ref PublicSubnet3
-
-        RouteTableId: !Ref PublicSubnetRouteTable
-  # PrivateSubnets
-      Properties:
-      Type: AWS::EC2::Subnet
-
-        AvailabilityZone: !Ref AvailabilityZone1
-        VpcId: !Ref EksVPC
-      Type: AWS::EC2::SubnetRouteTableAssociation
-          - Key: Name
-    PrivateSubnet1:
-          - Key: kubernetes.io/role/internal-elb
-      Properties:
-    PrivateSubnet2:
-        CidrBlock: !Ref PrivateSubnet1Block
-        RouteTableId: !Ref PublicSubnetRouteTable
-
-    PublicSubnet1RouteTableAssociation:
-        Tags:
-            Value: 1
-      Properties:
-      Type: AWS::EC2::Subnet
-      Type: AWS::EC2::Route
-        AvailabilityZone: !Ref AvailabilityZone2
-      Properties:
-        VpcId: !Ref EksVPC
-    PublicSubnet2RouteTableAssociation:
-          - Key: Name
-        CidrBlock: !Ref PrivateSubnet3Block
-          - Key: kubernetes.io/role/internal-elb
-      Properties:
-
-        RouteTableId: !Ref PublicSubnetRouteTable
-        Tags:
-      Type: AWS::EC2::Subnet
-            Value: 1  PrivateSubnetRouteTable:
-
-          - Key: kubernetes.io/role/internal-elb
-          - Key: Name
-    PrivateSubnet3:
-        Tags:
-      Properties:
-            Value: !Sub ${ClusterBaseName}-PrivateSubnet1
-        VpcId: !Ref EksVPC
-        VpcId: !Ref EksVPC
-        AvailabilityZone: !Ref AvailabilityZone3
-      Type: AWS::EC2::SubnetRouteTableAssociation
-            Value: !Sub ${ClusterBaseName}-PrivateSubnet3
-        SubnetId: !Ref PrivateSubnet1
-      Properties:
-        RouteTableId: !Ref PrivateSubnetRouteTable
-            Value: !Sub ${ClusterBaseName}-PrivateSubnetRouteTable  PrivateSubnet1RouteTableAssociation:
-      Type: AWS::EC2::SubnetRouteTableAssociation
-          - Key: Name
-        SubnetId: !Ref PrivateSubnet2
-      Properties:
-      Properties:
-        Tags:
-        CidrBlock: !Ref PrivateSubnet2Block
-
-        RouteTableId: !Ref PrivateSubnetRouteTable
-            Value: !Sub ${ClusterBaseName}-PrivateSubnet2
-      Properties:
-            Value: 1
-      Properties:
-      Properties:
-
-        VpcId: !Ref EksVPC
-          - Key: Name
-    EKSEC2SG:
-        Tags:
-
-          #FromPort: '22'
-            Value: !Sub ${ClusterBaseName}-HOST-SG
-
-        - IpProtocol: '-1'
-        GroupDescription: eksctl-host Security Group# EKSCTL-Host
-      Type: AWS::EC2::Instance
-
-        InstanceType: !Ref MyInstanceType
-      Type: AWS::EC2::SecurityGroup      SecurityGroupIngress:
-        KeyName: !Ref KeyName
-
-      Type: AWS::EC2::RouteTable
-          CidrIp: !Ref SgIngressSshCidr  EKSEC2:
-    PrivateSubnet2RouteTableAssociation:
-            SubnetId: !Ref PublicSubnet1
-
-            - !Ref EKSEC2SG
-        ImageId: !Ref LatestAmiId      Tags:
-        RouteTableId: !Ref PrivateSubnetRouteTable
-
-      Type: AWS::EC2::SubnetRouteTableAssociation
-            Ebs:
-
-    PrivateSubnet3RouteTableAssociation:
-        SubnetId: !Ref PrivateSubnet3
-        NetworkInterfaces:
-
-
-            !Sub |            DeleteOnTermination: true
-
-            PrivateIpAddress: 192.168.1.100
-          Fn::Base64:            hostnamectl --static set-hostname "${ClusterBaseName}-bastion-EC2"
-        BlockDeviceMappings:
-
-
-          #ToPort: '22'
-              #!/bin/bash            VolumeSize: 30
-      Properties:
-
-
-              echo 'export AWS_PAGER=""' >>/etc/profile            unzip awscliv2.zip >/dev/null 2>&1
-            Value: !Sub ${ClusterBaseName}-bastion-EC2
-
-          - DeviceIndex: 0
-              complete -C '/usr/local/bin/aws_completer' aws            wget https://github.com/andreazorzetto/yh/releases/download/v0.4.0/yh-linux-amd64.zip
-            GroupSet:
-              echo "export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /etc/profile
-            AssociatePublicIpAddress: true
-
-          - Key: Name
-              cd /root
-
-          - DeviceName: /dev/xvda
-
-            VolumeType: gp3
-            curl -s https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash            # Install eksctl
-            install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-
-      UserData:
-
-
-            # Install Packages            ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
-            echo 'root:qwe123' | chpasswd            systemctl restart sshd            # Config convenience
-
-
-            echo "sudo su -" >> /home/ec2-user/.bashrc
-            sed -i "s/^PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
-            KUBE_PS1_SYMBOL_ENABLE=false
-
-            function get_cluster_short() {
-            # Install YAML Highlighter
-            export AWS_DEFAULT_REGION=${AWS::Region}            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            curl -L https://github.com/kubernetes-sigs/krew/releases/download/v0.4.4/krew-linux_amd64.tar.gz -o /root/krew-linux_amd64.tar.gz
-
-            # Config Root account            sed -i "s/^#PermitRootLogin yes/PermitRootLogin yes/g" /etc/ssh/sshd_config
-            # Install aws cli v2
-
-            echo 'alias vi=vim' >> /etc/profile
-            rm -rf /root/.ssh/authorized_keys
-
-            ./krew-linux_amd64 install krew
-            sed -i "s/UTC/Asia\/Seoul/g" /etc/sysconfig/clock
-
-            yum -y install tree jq git htop            # Install kubectl & helm
-            # Install krew            tar zxvf krew-linux_amd64.tar.gz
-            source /root/kube-ps1/kube-ps1.sh            cat <<"EOT" >> /root/.bash_profile
-
-            mv /tmp/eksctl /usr/local/bin
-            echo 'source <(kubectl completion bash)' >> /root/.bashrc            echo 'complete -F __start_kubectl k' >> /root/.bashrc
-
-            export PATH="$PATH:/root/.krew/bin"
-            curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.28.5/2024-01-04/bin/linux/amd64/kubectl
-
-            curl -sL "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz" | tar xz -C /tmp
-            ./aws/install
-
-
-            echo 'alias k=kubectl' >> /root/.bashrc            
-            PS1='$(kube_ps1)'$PS1            EOT            KUBE_PS1_CLUSTER_FUNCTION=get_cluster_short
-
-
-            export CLUSTER_NAME=${ClusterBaseName}            export VPCID=$(aws ec2 describe-vpcs --filters "Name=tag:Name,Values=$CLUSTER_NAME-VPC" | jq -r .Vpcs[].VpcId)
-            unzip yh-linux-amd64.zip
-            export PubSubnet1=$(aws ec2 describe-subnets --filters Name=tag:Name,Values="$CLUSTER_NAME-PublicSubnet1" --query "Subnets[0].[SubnetId]" --output text)
-            mv yh /usr/local/bin/
-
-            # Create SSH Keypair
-            export PubSubnet2=$(aws ec2 describe-subnets --filters Name=tag:Name,Values="$CLUSTER_NAME-PublicSubnet2" --query "Subnets[0].[SubnetId]" --output text)            echo "export PubSubnet1=$PubSubnet1" >> /etc/profile
-
-            echo "export PubSubnet3=$PubSubnet3" >> /etc/profile
-            systemctl start docker && systemctl enable docker            export AWS_ACCESS_KEY_ID=${MyIamUserAccessKeyID}
-            export PrivateSubnet2=$(aws ec2 describe-subnets --filters Name=tag:Name,Values="$CLUSTER_NAME-PrivateSubnet2" --query "Subnets[0].[SubnetId]" --output text)
-
-            echo "export KUBERNETES_VERSION=$KUBERNETES_VERSION" >> /etc/profile            # VPC & Subnet
-            echo "export ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)" >> /etc/profile            # CLUSTER_NAME
-            echo 'export PATH="$PATH:/root/.krew/bin"' >> /etc/profile
-            kubectl krew install ctx ns get-all neat # ktop df-pv mtail tree            # Install Docker
-
-            amazon-linux-extras install docker -y
-            # Install kube-ps1
-            ssh-keygen -t rsa -N "" -f /root/.ssh/id_rsa            # IAM User Credentials
-
-
-            git clone https://github.com/jonmosco/kube-ps1.git /root/kube-ps1
-            export AWS_DEFAULT_REGION=${AWS::Region}            echo "export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID" >> /etc/profile
-
-
-            KUBE_PS1_SUFFIX=') '              echo "$1" | cut -d . -f1
-              attachPolicyARNs:              configurationValues: |-            cat <<EOT > precmd.yaml                - "yum install nvme-cli links tree tcpdump sysstat -y"
-
-
-            }
-            # Install krew plugin
-            echo "export PrivateSubnet3=$PrivateSubnet3" >> /etc/profile
-            echo "export PrivateSubnet2=$PrivateSubnet2" >> /etc/profile
-
-            # Create EKS Cluster & Nodegroup
-            sed -i 's/certManager: false/certManager: true/g' myeks.yaml
-
-
-            export AWS_SECRET_ACCESS_KEY=${MyIamUserSecretAccessKey}            export ACCOUNT_ID=$(aws sts get-caller-identity --query 'Account' --output text)            echo "export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY" >> /etc/profile
-
-            export KUBERNETES_VERSION=${KubernetesVersion}
-            echo "export AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION" >> /etc/profile
-
-            echo "export VPCID=$VPCID" >> /etc/profile
-            echo "export CLUSTER_NAME=$CLUSTER_NAME" >> /etc/profile            # K8S Version            export PubSubnet3=$(aws ec2 describe-subnets --filters Name=tag:Name,Values="$CLUSTER_NAME-PublicSubnet3" --query "Subnets[0].[SubnetId]" --output text)
-
-            echo "export PrivateSubnet1=$PrivateSubnet1" >> /etc/profile
-            echo "export PubSubnet2=$PubSubnet2" >> /etc/profile
-            export PrivateSubnet3=$(aws ec2 describe-subnets --filters Name=tag:Name,Values="$CLUSTER_NAME-PrivateSubnet3" --query "Subnets[0].[SubnetId]" --output text)
-            export PrivateSubnet1=$(aws ec2 describe-subnets --filters Name=tag:Name,Values="$CLUSTER_NAME-PrivateSubnet1" --query "Subnets[0].[SubnetId]" --output text)
-            sed -i 's/ebs: false/ebs: true/g' myeks.yaml
-            eksctl create cluster --name $CLUSTER_NAME --region=$AWS_DEFAULT_REGION --nodegroup-name=ng1 --node-type=${WorkerNodeInstanceType} --nodes ${WorkerNodeCount} --node-volume-size=${WorkerNodeVolumesize} --vpc-public-subnets "$PubSubnet1","$PubSubnet2","$PubSubnet3" --version ${KubernetesVersion} --ssh-access --ssh-public-key /root/.ssh/id_rsa.pub --with-oidc --external-dns-access --full-ecr-access --dry-run > myeks.yaml
-              version: latest # auto discovers the latest available
-            addons:
-                enableNetworkPolicy: "true"
-                - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
-
-            cat <<EOT >> myeks.yaml
-            - name: vpc-cni # no version is specified so it deploys the default version            - name: kube-proxy
-
-              version: latest
-              version: latest
-
-            - name: coredns
-            EOT
-
-              preBootstrapCommands:            EOT
-            sed -i -n -e '/instanceType/r precmd.yaml' -e '1,$p' myeks.yaml
-
-            echo 'cloudinit End!'Outputs:
-            nohup eksctl create cluster -f myeks.yaml --verbose 4 --kubeconfig "/root/.kube/config" 1> /root/create-eks.log 2>&1 &
-    Value: !GetAtt EKSEC2.PublicIp
-  eksctlhost:
-
-  ~~~
-  </details>
+   위 링크를 통해 yaml 확인해보면 아래와 같은 특이사항이 있다.
 
 - 특이사항
   eksctl ~~ --dry-run 명령어로 yaml로 만든 후 add-on 을 아래와 같이 추가
@@ -541,7 +94,212 @@ toc: true
   ~~~
 
 
+  **약 20 분 소요**
+
+  #### 완료 상태포기 
+
+  ~~~
+
+  ssh -i ~/.ssh/kp-gasida.pem ec2-user@$(aws cloudformation describe-stacks --stack-name myeks --query 'Stacks[*].Outputs[0].OutputValue' --output  text)
+
+  # cloud-init 실행 과정 로그 확인  
+  tail -f /var/log/cloud-init-output.log  
+
+  # cloud-init 정상 완료 후 eksctl 실행 과정 로그 확인  
+  tail -f /root/create-eks.log  
+
+  # default 네임스페이스 적용 
+  kubectl ns default  
+
+  # 설치 확인 
+  kubectl cluster-info  
+  eksctl get cluster  
+  eksctl get nodegroup --cluster $CLUSTER_NAME  
+
+  # 환경변수 정보 확인  
+  export | egrep 'ACCOUNT|AWS_|CLUSTER|KUBERNETES|VPC|Subnet' 
+  export | egrep 'ACCOUNT|AWS_|CLUSTER|KUBERNETES|VPC|Subnet' | egrep -v 'SECRET|KEY' 
+
+  # 인증 정보 확인  
+  cat /root/.kube/config | yh 
+  kubectl config view | yh  
+  kubectl ctx 
+
+  # 노드 정보 확인  
+  kubectl get node --label-columns=node.kubernetes.io/instance-type,eks.amazonaws.com/capacityType,topology.kubernetes.io/zone  
+  eksctl get iamidentitymapping --cluster myeks 
+
+  # krew 플러그인 확인
+  kubectl krew list
+
+  # 모든 네임스페이스에서 모든 리소스 확인
+  kubectl get-all
+
+  ~~~
+![구성](/Images/eks/eks_n2.png)
+
+![구성](/Images/eks/eks_n3.png)
+
+![구성](/Images/eks/eks_n4.png)
+
+![구성](/Images/eks/eks_n5.png)
+
+![구성](/Images/eks/eks_n6.png)
+
+![구성](/Images/eks/eks_n7.png)
+
+
+## 노드 정보 및 ssh 접속
+
+  ~~~
+
+  # 노드 IP 확인 및 PrivateIP 변수 지정
+  aws ec2 describe-instances --query "Reservations[*].Instances[*].{PublicIPAdd:PublicIpAddress,PrivateIPAdd:PrivateIpAddress,InstanceName:Tags[?Key=='Name']|[0].Value,Status:State.Name}" --filters Name=instance-state-name,Values=running --output table
+  N1=$(kubectl get node --label-columns=topology.kubernetes.io/zone --selector=topology.kubernetes.io/zone=ap-northeast-2a -o jsonpath={.items[0].status.addresses[0].address})
+  N2=$(kubectl get node --label-columns=topology.kubernetes.io/zone --selector=topology.kubernetes.io/zone=ap-northeast-2b -o jsonpath={.items[0].status.addresses[0].address})
+  N3=$(kubectl get node --label-columns=topology.kubernetes.io/zone --selector=topology.kubernetes.io/zone=ap-northeast-2c -o jsonpath={.items[0].status.addresses[0].address})
+  echo "export N1=$N1" >> /etc/profile
+  echo "export N2=$N2" >> /etc/profile
+  echo "export N3=$N3" >> /etc/profile
+  echo $N1, $N2, $N3
+
+  # 보안그룹 ID와 보안그룹 이름(Name아님을 주의!) 확인
+  aws ec2 describe-security-groups --query 'SecurityGroups[*].[GroupId, GroupName]' --output text
+
+  # 노드 보안그룹 ID 확인
+  aws ec2 describe-security-groups --filters Name=group-name,Values=*ng1* --query "SecurityGroups[*].[GroupId]" --output text
+  NGSGID=$(aws ec2 describe-security-groups --filters Name=group-name,Values=*ng1* --query "SecurityGroups[*].[GroupId]" --output text)
+  echo $NGSGID
+  echo "export NGSGID=$NGSGID" >> /etc/profile
+
+  # 노드 보안그룹에 eksctl-host 에서 노드(파드)에 접속 가능하게 룰(Rule) 추가 설정
+  aws ec2 authorize-security-group-ingress --group-id $NGSGID --protocol '-1' --cidr 192.168.1.100/32
+
+  # eksctl-host 에서 노드의IP나 coredns 파드IP로 ping 테스트
+  ping -c 1 $N1
+  ping -c 1 $N2
+  ping -c 1 $N3
+
+  # 워커 노드 SSH 접속 : '-i ~/.ssh/id_rsa' 생략 가능
+  for node in $N1 $N2 $N3; do ssh -i ~/.ssh/id_rsa ec2-user@$node hostname; done
+  ssh ec2-user@$N1
+  exit
+  ssh ec2-user@$N2
+  exit
+  ssh ec2-user@$N3
+  exit
+
+  ~~~
+![구성](/Images/eks/eks_n8.png)
+
+
+![구성](/Images/eks/eks_n9.png)
+
+![구성](/Images/eks/eks_n10.png)
+
+![구성](/Images/eks/eks_n11.png)
+
+![구성](/Images/eks/eks_n12.png)
+
+![구성](/Images/eks/eks_n14.png)
+
+
+### 모든 파드의 컨테이너 이미지 정보 확인 : 기본설치 vs Add-on 으로 최신 버전 설치
+<details>
+<summary>펼치기</summary>
+
+  ~~~
+  
+  # 모든 파드의 컨테이너 이미지 정보 확인
+  kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c
+  
+  # 위 버전은 Add-on 으로 최신 버전 설치
+  kubectl get pods -A
+  kubectl get pods --all-namespaces -o jsonpath="{.items[*].spec.containers[*].image}" | tr -s '[[:space:]]' '\n' | sort | uniq -c
+        3 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/amazon/aws-network-policy-agent:v1.0.8-eksbuild.1
+        3 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/amazon-k8s-cni:v1.16.4-eksbuild.2
+        2 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/eks/coredns:v1.10.1-eksbuild.7
+        3 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/eks/kube-proxy:v1.28.6-minimal-eksbuild.
+        # 아래는 기본 설치 시 버전
+        2 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/amazon-k8s-cni:v1.15.1-eksbuild.1
+        2 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/eks/coredns:v1.10.1-eksbuild.4
+        2 602401143452.dkr.ecr.ap-northeast-2.amazonaws.com/eks/kube-proxy:v1.28.2-minimal-eksbuild.2
+  
+  # eksctl 설치/업데이트 addon 확인
+  eksctl get addon --cluster $CLUSTER_NAME
+  NAME            VERSION                 STATUS  ISSUES  IAMROLE                                                                      UPDATE AVAILABLE CONFIGURATION VALUES
+  coredns         v1.10.1-eksbuild.7      ACTIVE  0
+  kube-proxy      v1.28.6-eksbuild.2      ACTIVE  0
+  vpc-cni         v1.16.4-eksbuild.2      ACTIVE  0       arn:aws:iam::911283464785:role/eksctl-myeks-addon-vpc-cni-Role1-tGXXZMjRWrW3                  enableNetworkPolicy: "true"
+  
+  # (참고) eks 설치 yaml 중 addon 내용
+  tail -n11 myeks.yaml
+  addons:
+  - name: vpc-cni # no version is specified so it deploys the default version
+    version: latest # auto discovers the latest available
+    attachPolicyARNs:
+      - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+    configurationValues: |-
+      enableNetworkPolicy: "true"
+  - name: kube-proxy
+    version: latest
+  - name: coredns
+    version: latest
+  
+  ~~~
+
+  ![구성](/Images/eks/eks_n15.png)
+  ![구성](/Images/eks/eks_n16.png)
+  ![구성](/Images/eks/eks_n17.png)
 
 
 
+  **버전별 Add-on 지원 **
+  ~~~
+  # v1.29 지원 addon
+  aws eks describe-addon-versions --kubernetes-version 1.29  --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+  eksctl utils describe-addon-versions --kubernetes-version 1.29 | grep AddonName
+  
+  # v1.28 지원 addon
+  aws eks describe-addon-versions --kubernetes-version 1.28  --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+  eksctl utils describe-addon-versions --kubernetes-version 1.28 | grep AddonName
+  
+  # v1.27 지원 addon
+  aws eks describe-addon-versions --kubernetes-version 1.27  --query 'addons[].{MarketplaceProductUrl: marketplaceInformation.productUrl, Name: addonName, Owner: owner Publisher: publisher, Type: type}' --output table
+  eksctl utils describe-addon-versions --kubernetes-version 1.27 | grep AddonName
+  
+  # 지원 addon 비교
+  eksctl utils describe-addon-versions --kubernetes-version 1.29 | grep AddonName | wc -l
+  eksctl utils describe-addon-versions --kubernetes-version 1.28 | grep AddonName | wc -l
+  eksctl utils describe-addon-versions --kubernetes-version 1.27 | grep AddonName | wc -l
+  
+  ~~~
 
+  ![구성](/Images/eks/eks_n18.png)
+
+  ![구성](/Images/eks/eks_n19.png)
+
+
+  **Add-on 별 전체 버전 정보 확인**
+  ~~~
+  
+  ADDON=<add-on 이름>
+  ADDON=vpc-cni
+  
+  # 아래는 vpc-cni 전체 버전 정보와 기본 설치 버전(True) 정보 확인
+  aws eks describe-addon-versions \
+      --addon-name $ADDON \
+      --kubernetes-version 1.28 \
+      --query "addons[].addonVersions[].[addonVersion, compatibilities[].defaultVersion]" \
+      --output text
+  
+  ~~~
+
+
+  </details>
+
+
+## 삭제하기
+~~~
+eksctl delete cluster --name $CLUSTER_NAME && aws cloudformation delete-stack --stack-name $CLUSTER_NAME
+~~~
