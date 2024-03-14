@@ -13,6 +13,20 @@ toc: true
 
 
 ## AWS VPC CNI 소개
+ - [사전학습](https://malwareanalysis.tistory.com/555)
+  
+    요약: pod 대역과 work node 대역은 동일하다.
+
+    할당하는 과정은 tail -f /var/log/aws-routed-eni/ipamd.log 에서 확인 가능하고 
+    ~~~
+    # 네임스페이스 분석
+    ssh ubuntu@{workernode IP}
+    sudo lsns -o PID,COMMAND -t net
+    ##최근 PID입력
+    sudo nsenter -t {PID} -n ip -c addr
+    ~~~
+
+    
 
 ## 노드에서 기본 네트워크 정보 확인
 
@@ -34,13 +48,13 @@ toc: true
 ## CoreDNS
 
 
-## 11. Gatewaty API
-## 12. 파드 간 속도 측정
-## 13. kube-ops-view
-## 15. CNI-Metrics-helper
-## 16. Network Policies with VPC CNI
-## 17. How to rapidly scale your application with ALB on EKS (without losing traffic)
-## 18. IPv6 with EKS
+##  Gatewaty API
+##  파드 간 속도 측정
+##  kube-ops-view
+##  CNI-Metrics-helper
+##  Network Policies with VPC CNI
+##  How to rapidly scale your application with ALB on EKS (without losing traffic)
+##  IPv6 with EKS
 
 
 ---
