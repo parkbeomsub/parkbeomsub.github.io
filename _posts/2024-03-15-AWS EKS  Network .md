@@ -1896,34 +1896,34 @@ https://aws.amazon.com/ko/blogs/containers/introducing-aws-gateway-api-controlle
 <details><summary>펼치기</summary>
 
 
-    ```bash
-    # iperf3 설치 
-    brew install iperf3
-    
-    # iperf3 테스트 1 : TCP 5201, 측정시간 10초
-    iperf3 -s # 서버모드 실행
-    iperf3 -c 127.0.0.1 # 클라이언트모드 실행
-    
-    # iperf3 테스트 2 : TCP 80, 측정시간 5초
-    iperf3 -s -p 80
-    iperf3 -c 127.0.0.1 -p 80 -t 5
-    
-    # iperf3 테스트 3 : UDP 사용, 역방향 모드(-R)
-    iperf3 -s 
-    iperf3 -c 127.0.0.1 -u -b 100G
-    
-    # iperf3 테스트 4 : 역방향 모드(-R)
-    iperf3 -s 
-    iperf3 -c 127.0.0.1 -R
-    
-    # iperf3 테스트 5 : 쌍방향 모드(-R)
-    iperf3 -s 
-    iperf3 -c 127.0.0.1 --bidir
-    
-    # iperf3 테스트 6 : TCP 다중 스트림(30개), -P(number of parallel client streams to run)
-    iperf3 -s 
-    iperf3 -c 127.0.0.1 -P 2 -t 30
-    ```
+        ```bash
+        # iperf3 설치 
+        brew install iperf3
+        
+        # iperf3 테스트 1 : TCP 5201, 측정시간 10초
+        iperf3 -s # 서버모드 실행
+        iperf3 -c 127.0.0.1 # 클라이언트모드 실행
+        
+        # iperf3 테스트 2 : TCP 80, 측정시간 5초
+        iperf3 -s -p 80
+        iperf3 -c 127.0.0.1 -p 80 -t 5
+        
+        # iperf3 테스트 3 : UDP 사용, 역방향 모드(-R)
+        iperf3 -s 
+        iperf3 -c 127.0.0.1 -u -b 100G
+        
+        # iperf3 테스트 4 : 역방향 모드(-R)
+        iperf3 -s 
+        iperf3 -c 127.0.0.1 -R
+        
+        # iperf3 테스트 5 : 쌍방향 모드(-R)
+        iperf3 -s 
+        iperf3 -c 127.0.0.1 --bidir
+        
+        # iperf3 테스트 6 : TCP 다중 스트림(30개), -P(number of parallel client streams to run)
+        iperf3 -s 
+        iperf3 -c 127.0.0.1 -P 2 -t 30
+        ```
     
 - **[실습] 쿠버네티스 환경에서 속도 측정 테스트**
     - 배포 및 확인
@@ -1985,6 +1985,9 @@ https://aws.amazon.com/ko/blogs/containers/introducing-aws-gateway-api-controlle
     - 삭제:  **`kubectl delete -f k8s-iperf3.yaml`**
 
 
+- 샘플 애플리케이션 배포 및 네트워크 정책 적용 실습 2 - [Link](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/cni-network-policy.html#network-policy-stars-demo) ← 직접 실습 해보세요!
+    - 네트워크 정책 로그를 Amazon CloudWatch Logs로 전송 - [Link](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/cni-network-policy.html#network-policies-troubleshooting)
+
 </details>
 
 ##  kube-ops-view
@@ -2015,20 +2018,575 @@ kubectl delete -f nginx-dp.yaml
 
 </details>
 
+![구성](/Images/eks/eksn_65.png)
 
-##  CNI-Metrics-helper
 
 
+
+
+
+
+
+## Topology Aware Hint
+
+
+
+
+[Amazon EKS에서 Topology Aware Hint 기능을 활용하여 Cross-AZ 통신 비용 절감하기 | Amazon Web Services](https://aws.amazon.com/ko/blogs/tech/amazon-eks-reduce-cross-az-traffic-costs-with-topology-aware-hints/)
+
+[Exploring the effect of Topology Aware Hints on network traffic in Amazon Elastic Kubernetes Service | Amazon Web Services](https://aws.amazon.com/blogs/containers/exploring-the-effect-of-topology-aware-hints-on-network-traffic-in-amazon-elastic-kubernetes-service/)
+
+- 테스트를 위한 디플로이먼트와 서비스 배포
+
+
+<details><summary>펼치기</summary>
+
+    ```bash
+    # 현재 노드 AZ 배포 확인
+    **kubectl get node --label-columns=topology.kubernetes.io/zone**
+    NAME                                               STATUS   ROLES    AGE   VERSION                **ZONE**
+    ip-192-168-1-225.ap-northeast-2.compute.internal   Ready    <none>   70m   v1.24.11-eks-a59e1f0   ap-northeast-2a
+    ip-192-168-2-248.ap-northeast-2.compute.internal   Ready    <none>   70m   v1.24.11-eks-a59e1f0   ap-northeast-2b
+    ip-192-168-3-228.ap-northeast-2.compute.internal   Ready    <none>   70m   v1.24.11-eks-a59e1f0   ap-northeast-2c
+    
+    # 테스트를 위한 디플로이먼트와 서비스 배포
+    cat <<EOF | kubectl create -f -
+    apiVersion: apps/v1
+    kind: **Deployment**
+    metadata:
+      name: deploy-echo
+    spec:
+      replicas: 3
+      selector:
+        matchLabels:
+          app: deploy-websrv
+      template:
+        metadata:
+          labels:
+            app: deploy-websrv
+        spec:
+          terminationGracePeriodSeconds: 0
+          containers:
+          - name: websrv
+            image: **registry.k8s.io/echoserver:1.5**
+            ports:
+            - **containerPort: 8080**
+    ---
+    apiVersion: v1
+    kind: **Service**
+    metadata:
+      name: svc-clusterip
+    spec:
+      ports:
+        - name: svc-webport
+          **port: 8080
+          targetPort: 80**
+      selector:
+        app: deploy-websrv
+      type: **ClusterIP**
+    EOF
+    
+    # 확인
+    kubectl get deploy,svc,ep,endpointslices
+    kubectl get pod -owide
+    kubectl get svc,ep svc-clusterip
+    kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip
+    kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh
+    
+    # 접속 테스트를 수행할 클라이언트 파드 배포
+    cat <<EOF | kubectl create -f -
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: netshoot-pod
+    spec:
+      containers:
+      - name: netshoot-pod
+        image: nicolaka/netshoot
+        command: ["tail"]
+        args: ["-f", "/dev/null"]
+      terminationGracePeriodSeconds: 0
+    EOF 
+    
+    # 확인
+    kubectl get pod -owide
+    ```
+    
+- 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 : ****AZ(zone) 상관없이 랜덤 확률 부하분산 동작
+    
+    ```bash
+    # 디플로이먼트 파드가 배포된 AZ(zone) 확인
+    **kubectl get pod -l app=deploy-websrv -owide**
+    
+    # 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인
+    kubectl exec -it **netshoot-pod** -- curl **svc-clusterip** | grep Hostname
+    Hostname: deploy-echo-7f67d598dc-h9vst
+    
+    kubectl exec -it **netshoot-pod** -- curl **svc-clusterip** | grep Hostname
+    Hostname: deploy-echo-7f67d598dc-45trg
+    
+    # 100번 반복 접속 : 3개의 파드로 AZ(zone) 상관없이 랜덤 확률 부하분산 동작
+    kubectl exec -it netshoot-pod -- zsh -c "for i in {**1..100**}; do curl -s **svc-clusterip** | grep Hostname; done | sort | uniq -c | sort -nr"
+      35 Hostname: deploy-echo-7f67d598dc-45trg
+      33 Hostname: deploy-echo-7f67d598dc-hg995
+      32 Hostname: deploy-echo-7f67d598dc-h9vst
+    ```
+    
+    - (심화) IPTables 정책 확인 : ClusterIP는 KUBE-SVC-Y → KUBE-SEP-Z… (3곳) ⇒ 즉, 3개의 파드로 랜덤 확률 부하분산 동작
+    
+    ```bash
+    #
+    ssh ec2-user@$N1 sudo **iptables -t nat -nvL**
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list **PREROUTING**
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list **KUBE-SERVICES**
+      305 18300 **KUBE-SVC-KBDEBIL6IU6WL7RF**  tcp  --  *      *       0.0.0.0/0            10.100.155.216       /* default/svc-clusterip:svc-webport cluster IP */ tcp dpt:80
+      ...
+    
+    ****# 노드1에서 SVC 정책 확인 : SEP(Endpoint) 파드 3개 확인 >> 즉, 3개의 파드로 랜덤 확률 부하분산 동작
+    ****ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list **KUBE-SVC-KBDEBIL6IU6WL7RF**
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+      108  6480 KUBE-SEP-**WC4ARU3RZJKCUD7M**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.1.240:8080 */ statistic mode random probability 0.33333333349
+      115  6900 KUBE-SEP-**3HFAJH523NG6SBCX**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.2.36:8080 */ statistic mode random probability 0.50000000000
+       82  4920 KUBE-SEP-**H37XIVQWZO52OMNP**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.3.13:8080 */
+    
+    # 노드2에서 동일한 SVC 이름 정책 확인 : 상동
+    ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
+    (상동)
+    
+    # 노드3에서 동일한 SVC 이름 정책 확인 : 상동
+    ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
+    (상동)
+    
+    ****# 3개의 SEP는 각각 개별 파드 접속 정보
+    ****ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP-**WC4ARU3RZJKCUD7M**
+    Chain KUBE-SEP-WC4ARU3RZJKCUD7M (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.1.240        0.0.0.0/0            /* default/svc-clusterip:svc-webport */
+      108  6480 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to:**192.168.1.240:8080**
+    
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP-**3HFAJH523NG6SBCX**
+    Chain KUBE-SEP-3HFAJH523NG6SBCX (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.2.36         0.0.0.0/0            /* default/svc-clusterip:svc-webport */
+      115  6900 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to:**192.168.2.36:8080**
+    
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP-**H37XIVQWZO52OMNP**
+    Chain KUBE-SEP-H37XIVQWZO52OMNP (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.3.13         0.0.0.0/0            /* default/svc-clusterip:svc-webport */
+       82  4920 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to:**192.168.3.13:8080**
+    ```
+    
+- **Topology Aware Hint** 설정 후 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 : **같은 AZ(zone)의 목적지 파드로만 접속**
+    
+    ```bash
+    # Topology Aware Hint 설정 : 서비스에 annotate에 아래처럼 추가
+    kubectl annotate service svc-clusterip "**service.kubernetes.io/topology-aware-hints=auto**"
+    
+    # 100번 반복 접속 : 테스트 파드(netshoot-pod)와 같은 AZ(zone)의 목적지 파드로만 접속
+    kubectl exec -it netshoot-pod -- zsh -c "for i in {**1..100**}; do curl -s **svc-clusterip** | grep Hostname; done | sort | uniq -c | sort -nr"
+      100 Hostname: deploy-echo-7f67d598dc-45trg
+    
+    # endpointslices 확인 시, 기존에 없던 hints 가 추가되어 있음 >> 참고로 describe로는 hints 정보가 출력되지 않음
+    **kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh**
+    apiVersion: v1
+    items:
+    - addressType: IPv4
+      apiVersion: discovery.k8s.io/v1
+      endpoints:
+      **- addresses:**
+        - 192.168.3.13
+        conditions:
+          ready: true
+          serving: true
+          terminating: false
+        **hints:
+          forZones:
+          - name: ap-northeast-2c**
+        **nodeName**: **ip-192-168-3-228**.ap-northeast-2.compute.internal
+        targetRef:
+          kind: Pod
+          name: deploy-echo-7f67d598dc-hg995
+          namespace: default
+          uid: c1ce0e9c-14e7-417d-a1b9-2dfd54da8d4a
+        zone: ap-northeast-2c
+      **- addresses:**
+        - 192.168.2.65
+        conditions:
+          ready: true
+          serving: true
+          terminating: false
+        **hints:
+          forZones:
+          - name: ap-northeast-2b**
+        **nodeName: ip-192-168-2-248**.ap-northeast-2.compute.internal
+        targetRef:
+          kind: Pod
+          name: deploy-echo-7f67d598dc-h9vst
+          namespace: default
+          uid: 77af6a1b-c600-456c-96f3-e1af621be2af
+        zone: ap-northeast-2b
+      **- addresses:**
+        - 192.168.1.240
+        conditions:
+          ready: true
+          serving: true
+          terminating: false
+        **hints:
+          forZones:
+          - name: ap-northeast-2a**
+        **nodeName: ip-192-168-1-225**.ap-northeast-2.compute.internal
+        targetRef:
+          kind: Pod
+          name: deploy-echo-7f67d598dc-45trg
+          namespace: default
+          uid: 53ca3ac7-b9fb-4d98-a3f5-c312e60b1e67
+        zone: ap-northeast-2a
+      kind: EndpointSlice
+    ...
+    ```
+    
+    - (심화) IPTables 정책 확인 : ClusterIP는 KUBE-SVC-Y → KUBE-SEP-Z… (1곳, 해당 노드와 같은 AZ에 배포된 파드만 출력) ⇒ 동일 AZ간 접속
+    
+    ```bash
+    # 노드1에서 SVC 정책 확인 : SEP(Endpoint) 파드 1개 확인(해당 노드와 같은 AZ에 배포된 파드만 출력) >> 동일 AZ간 접속
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-SEP-**WC4ARU3RZJKCUD7M**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.1.240:8080** */
+    
+    # 노드2에서 SVC 정책 확인 : SEP(Endpoint) 파드 1개 확인(해당 노드와 같은 AZ에 배포된 파드만 출력) >> 동일 AZ간 접속
+    ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-SEP-**3HFAJH523NG6SBCX**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.36:8080** */
+    
+    # 노드3에서 SVC 정책 확인 : SEP(Endpoint) 파드 1개 확인(해당 노드와 같은 AZ에 배포된 파드만 출력) >> 동일 AZ간 접속
+    ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-SEP-**H37XIVQWZO52OMNP**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.3.13:8080** */
+    ```
+    
+    - (추가 테스트) 만약 파드 갯수를 1개로 줄여서 같은 AZ에 목적지 파드가 없을 경우?
+    
+    ```bash
+    # 파드 갯수를 1개로 줄이기
+    kubectl scale deployment deploy-echo --replicas 1
+    
+    # 파드 AZ 확인 : 아래 처럼 현재 다른 AZ에 배포
+    **kubectl get pod -owide**
+    NAME                           READY   STATUS    RESTARTS   AGE   IP              NODE                                               NOMINATED NODE   READINESS GATES
+    **deploy-echo**-7f67d598dc-h9vst   1/1     Running   0          18m   **192.168.2**.65    ip-192-168-2-248.ap-northeast-2.compute.internal   <none>           <none>
+    **netshoot-pod**                   1/1     Running   0          66m   **192.168.1.**137   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
+    
+    # 100번 반복 접속 : 다른 AZ이지만 목적지파드로 접속됨!
+    kubectl exec -it netshoot-pod -- zsh -c "for i in {**1..100**}; do curl -s **svc-clusterip** | grep Hostname; done | sort | uniq -c | sort -nr"
+      100 Hostname: **deploy-echo**-7f67d598dc-h9vst
+    
+    # 아래 3개 노드 모두 SVC에 1개의 SEP 정책 존재
+    **ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF**
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+      100  6000 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.65:8080** */
+    
+    **ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF**
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.65:8080** */
+    
+    **ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF**
+    Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
+     pkts bytes target     prot opt in     out     source               destination
+        0     0 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.65:8080** */
+    
+    # endpointslices 확인 : hint 정보 없음
+    **kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh**
+    ```
+    
+    - (참고) Topology Aware Hint 설정 제거
+    
+    ```bash
+    kubectl annotate service svc-clusterip "service.kubernetes.io/topology-aware-hints**-**"
+    ```
+    
+    - 실습 리소스 삭제:  `kubectl delete deploy deploy-echo; kubectl delete svc svc-clusterip`
+    
+- (추가) 파드 토폴로지 분배 **topologySpreadConstraints** - [Docs](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/)
+    
+    ```bash
+    # 디플로이먼트 배포
+    cat <<EOF | kubectl create -f -
+    apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      name: deploy-echo
+    spec:
+      **replicas: 6**
+      selector:
+        matchLabels:
+          app: deploy-websrv
+      template:
+        metadata:
+          labels:
+            app: deploy-websrv
+        spec:
+          terminationGracePeriodSeconds: 0
+          containers:
+          - name: websrv
+            image: registry.k8s.io/echoserver:1.5
+            ports:
+            - containerPort: 8080
+          **topologySpreadConstraints**:
+          - maxSkew: 1
+            topologyKey: "**topology.kubernetes.io/zone**"
+            whenUnsatisfiable: **DoNotSchedule**
+            labelSelector:
+              matchLabels:
+                app: deploy-websrv
+    EOF
+    
+    # 파드 토폴로지 분배 확인 : AZ별 2개씩 파드 배포 확인
+    **kubectl get pod -owide**
+    NAME                           READY   STATUS    RESTARTS   AGE    IP              NODE                                               NOMINATED NODE   READINESS GATES
+    deploy-echo-79c4fcbc44-27tr5   1/1     Running   0          108s   192.168.1.240   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
+    deploy-echo-79c4fcbc44-2bgcr   1/1     Running   0          108s   192.168.1.177   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
+    deploy-echo-79c4fcbc44-4gf8n   1/1     Running   0          108s   192.168.3.13    ip-192-168-3-228.ap-northeast-2.compute.internal   <none>           <none>
+    deploy-echo-79c4fcbc44-5dqt8   1/1     Running   0          108s   192.168.2.65    ip-192-168-2-248.ap-northeast-2.compute.internal   <none>           <none>
+    deploy-echo-79c4fcbc44-6d99q   1/1     Running   0          108s   192.168.2.180   ip-192-168-2-248.ap-northeast-2.compute.internal   <none>           <none>
+    deploy-echo-79c4fcbc44-m2qvh   1/1     Running   0          108s   192.168.3.66    ip-192-168-3-228.ap-northeast-2.compute.internal   <none>           <none>
+    ```
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/76aa791d-2f21-44b5-8332-3333ce186629/Untitled.png)
+    
+    - 갯수를 5개 → 4개 → 3개로 줄여보면서 확인 해보자 ⇒ 이후 4개 → 5개 → 6개 → 7개 → 8개 → 9개로 늘려 보면서 배치를 확인해보자
+    
+    ```bash
+    kubectl scale deployment deploy-echo --replicas 5
+    kubectl scale deployment deploy-echo --replicas 4
+    kubectl scale deployment deploy-echo --replicas 3
+    ```
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/85c55478-e702-4ab3-bb9c-a9b9ac679c45/Untitled.png)
+    
+    - 실습 리소스 삭제:  `kubectl delete deploy deploy-echo`
+
+</details>
+
+## CNI-Metrics-helper
+
+https://blog.naver.com/qwerty_1234s/223101405443
 
 ##  Network Policies with VPC CNI
+
+
+`참고 링크` : [Link1](https://aws.amazon.com/ko/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies/) [Link2](https://github.com/aws-samples/eks-network-policy-examples) [Link3](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/cni-network-policy.html)
+
+- AWS EKS fully supports the **upstream Kubernetes Network Policy API**, ensuring compatibility and adherence to Kubernetes standards.
+
+`동작` : **eBPF**로 패킷 필터링 동작 - Network Policy Controller, Node Agent, eBPF SDK
+
+- 사전 조건 : EKS 1.25 버전 이상, AWS VPC CNI 1.14 이상, OS 커널 5.10 이상 EKS 최적화 AMI(AL2, Bottlerocket, Ubuntu)
+- Network Policy Controller : v1.25 EKS 버전 이상 자동 설치, 통제 정책 모니터링 후 eBPF 프로그램을 생성 및 업데이트하도록 Node Agent에 지시
+- Node Agent : AWS VPC CNI 번들로 ipamd 플러그인과 함께 설치됨(aws-node 데몬셋). eBPF 프래그램을 관리
+- eBPF SDK : AWS VPC CNI에는 노드에서 eBPF 프로그램과 상호 작용할 수 있는 SDK 포함, eBPF 실행의 런타임 검사, 추적 및 분석 가능
+
+
+<details><summary>설치</summary>
+
+~~~
+
+# Network Policy 기본 비활성화되어 있어, 활성화 필요 : 실습 환경은 미리 활성화 설정 추가되어 있음
+tail -n 11 myeks.yaml | yh
+addons: 
+- name: vpc-cni # no version is specified so it deploys the default version
+  version: latest # auto discovers the latest available
+  attachPolicyARNs: 
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+  configurationValues: |-
+    enableNetworkPolicy: "true"
+
+# Node Agent 확인 : AWS VPC CNI 1.14 이상 버전 정보 확인
+kubectl get ds aws-node -n kube-system -o yaml | k neat | yh
+...
+    - args: 
+      - --enable-ipv6=false
+      - --enable-network-policy=true
+...
+    volumeMounts: 
+    - mountPath: /host/opt/cni/bin
+      name: cni-bin-dir
+    - mountPath: /sys/fs/bpf
+      name: bpf-pin-path
+    - mountPath: /var/log/aws-routed-eni
+      name: log-dir
+    - mountPath: /var/run/aws-node
+      name: run-dir
+...
+
+
+kubectl get ds aws-node -n kube-system -o yaml | grep -i image:
+kubectl get pod -n kube-system -l k8s-app=aws-node
+kubectl get ds -n kube-system aws-node -o jsonpath='{.spec.template.spec.containers[*].name}{"\n"}'
+aws-node aws-eks-nodeagent
+
+# EKS 1.25 버전 이상 확인
+kubectl get node
+
+# OS 커널 5.10 이상 확인
+ssh ec2-user@$N1 uname -r
+5.10.210-201.852.amzn2.x86_64
+
+# 실행 중인 eBPF 프로그램 확인
+ssh ec2-user@$N1 sudo /opt/cni/bin/aws-eks-na-cli ebpf progs
+Programs currently loaded : 
+Type : 26 ID : 6 Associated maps count : 1
+========================================================================================
+Type : 26 ID : 8 Associated maps count : 1
+========================================================================================
+
+# 각 노드에 BPF 파일 시스템을 탑재 확인
+ssh ec2-user@$N1 mount | grep -i bpf
+none on /sys/fs/bpf type bpf (rw,nosuid,nodev,noexec,relatime,mode=700)
+
+ssh ec2-user@$N1 df -a | grep -i bpf
+none                   0       0         0    - /sys/fs/bpf
+
+~~~
+
+```bash
+#
+git clone https://github.com/aws-samples/eks-network-policy-examples.git
+cd eks-network-policy-examples
+tree advanced/manifests/
+kubectl apply -f advanced/manifests/
+
+# 확인
+kubectl get pod,svc
+kubectl get pod,svc -n another-ns
+
+# 통신 확인
+kubectl exec -it client-one -- curl demo-app
+kubectl exec -it client-two -- curl demo-app
+kubectl exec -it another-client-one -n another-ns -- curl **demo-app**
+kubectl exec -it another-client-one -n another-ns -- curl demo-app.**default**
+kubectl exec -it another-client-two -n another-ns -- curl demo-app.default.svc
+```
+
+- 모든 트래픽 거부
+
+```bash
+# 모니터링
+# kubectl exec -it client-one -- curl demo-app
+while true; do kubectl exec -it client-one -- curl --connect-timeout 1 demo-app ; date; sleep 1; done
+
+# 정책 적용
+cat advanced/policies/01-deny-all-ingress.yaml | yh
+kubectl apply -f advanced/policies/01-deny-all-ingress.yaml
+**kubectl get networkpolicy**
+
+# 정책 다시 삭제
+kubectl delete -f advanced/policies/01-deny-all-ingress.yaml
+
+# 다시 적용
+kubectl apply -f advanced/policies/01-deny-all-ingress.yaml
+```
+
+- 동일 네임스페이스 + 클라이언트1 로부터의 수신 허용
+
+```bash
+#
+cat advanced/policies/03-allow-ingress-from-samens-client-one.yaml | yh
+kubectl apply -f advanced/policies/03-allow-ingress-from-samens-client-one.yaml
+kubectl get networkpolicy
+
+# 클라이언트2 수신 확인
+kubectl exec -it client-two -- curl --connect-timeout 1 demo-app
+```
+
+- another-ns 네임스페이스로부터의 수신 허용
+
+```bash
+# 모니터링
+# kubectl exec -it another-client-one -n another-ns -- curl --connect-timeout 1 demo-app.default
+while true; do kubectl exec -it another-client-one -n another-ns -- curl --connect-timeout 1 demo-app.default ; date; sleep 1; done
+
+#
+cat advanced/policies/04-allow-ingress-from-xns.yaml | yh
+kubectl apply -f advanced/policies/04-allow-ingress-from-xns.yaml
+kubectl get networkpolicy
+
+#
+kubectl exec -it another-client-two -n another-ns -- curl --connect-timeout 1 demo-app.default
+```
+
+- eBPF 관련 정보 확인
+
+```bash
+# 실행 중인 eBPF 프로그램 확인
+for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i **sudo /opt/cni/bin/aws-eks-na-cli ebpf progs**; echo; done
+
+# eBPF 로그 확인
+for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo cat /var/log/aws-routed-eni/ebpf-sdk.log; echo; done
+for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo cat /var/log/aws-routed-eni/**network-policy-agent**; echo; done
+```
+
+- 송신 트래픽 거부 : 기본 네임스페이스의 클라이언트-1 포드에서 모든 송신 격리를 적용
+
+```bash
+# 모니터링
+while true; do kubectl exec -it client-one -- curl --connect-timeout 1 google.com ; date; sleep 1; done
+
+#
+cat advanced/policies/06-deny-egress-from-client-one.yaml | yh
+kubectl apply -f advanced/policies/06-deny-egress-from-client-one.yaml
+kubectl get networkpolicy
+
+#
+kubectl exec -it client-one -- nslookup demo-app
+```
+
+- 송신 트래픽 허용 : DNS 트래픽을 포함하여 여러 포트 및 네임스페이스에서의 송신을 허용
+
+```bash
+# 모니터링
+while true; do kubectl exec -it client-one -- curl --connect-timeout 1 demo-app ; date; sleep 1; done
+
+#
+cat advanced/policies/08-allow-egress-to-demo-app.yaml | yh
+kubectl apply -f advanced/policies/08-allow-egress-to-demo-app.yaml
+kubectl get networkpolicy
+```
+
+- 실습 후 리소스 삭제
+
+```bash
+kubectl delete networkpolicy --all
+kubectl delete -f advanced/manifests/
+```
+
+
+</details>
 
 
 
 ##  How to rapidly scale your application with ALB on EKS (without losing traffic)
 
+https://aws.amazon.com/ko/blogs/containers/how-to-rapidly-scale-your-application-with-alb-on-eks-without-losing-traffic/
 
+https://github.com/aws-samples/app-health-with-aws-load-balancer-controller/tree/main
+
+https://aws.github.io/aws-eks-best-practices/networking/loadbalancing/loadbalancing/
 
 ##  IPv6 with EKS
+
+The Journey to IPv6 on Amazon EKS: Foundation (Part 1) - [Link](https://aws.amazon.com/blogs/containers/the-journey-to-ipv6-on-amazon-eks-foundation-part-1/)
+
+The Journey to IPv6 on Amazon EKS: Foundation (Part 2) - [Link](https://aws.amazon.com/blogs/containers/the-journey-to-ipv6-on-amazon-eks-implementation-patterns-part-2/)
+
+The Journey to IPv6 on Amazon EKS: Foundation (Part 3) - [Link](https://aws.amazon.com/blogs/containers/the-journey-to-ipv6-on-amazon-eks-interoperability-scenarios-part-3/)
+
 
 
 ---
@@ -2039,12 +2597,78 @@ eksctl delete cluster --name $CLUSTER_NAME && aws cloudformation delete-stack --
 
 
 
+----
+같이 해보면 좋은 과제들 
+- `[도전과제1]` EKS Max pod 개수 증가 - Prefix Delegation + WARM & MIN IP/Prefix Targets : EKS에 직접 설정 후 파드 150대 생성해보기 - [링크](https://aws.github.io/aws-eks-best-practices/networking/prefix-mode/) [Workshop](https://www.eksworkshop.com/docs/networking/prefix/)
+    
+    [Prefix Delegation | EKS Workshop](https://www.eksworkshop.com/docs/networking/prefix/)
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4fcccbd6-c493-44e7-9844-6311e620670d/Untitled.png)
+    
+- `[도전과제2]` EKS Max pod 개수 증가 - Custom Network : EKS에 직접 설정 후 파드 150대 생성해보기 - [링크](https://aws.github.io/aws-eks-best-practices/networking/custom-networking/) [Workshop](https://www.eksworkshop.com/docs/networking/custom-networking/)
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a4203f92-1986-4765-97ff-5f3220c971a9/Untitled.png)
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/a83d3da4-3ffb-4956-8fd2-25748699388d/Untitled.png)
+    
+- `[도전과제3]` Security Group for Pod : 파드별 보안그룹 적용해보기 - [링크](https://aws.github.io/aws-eks-best-practices/networking/sgpp/) [Workshop](https://www.eksworkshop.com/docs/networking/security-groups-for-pods/)
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/221f40b5-cefd-453a-8e01-b1f30e99bd3c/Untitled.png)
+    
+    ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/4d7ac0d5-3b48-44fb-bdcb-83748754a41b/Untitled.png)
+    
+- `[도전과제4]` 게임서버의 트래픽(UDP)를 서비스(NLB)를 통해 인입 설정 - [링크](https://aws.amazon.com/ko/blogs/containers/how-to-route-udp-traffic-into-kubernetes/)
+- `[도전과제5]` Multiple Ingress pattern : 여러 Ingress 를 하나의 ALB에서 처리 할 수 있게 설정 - [링크](https://www.eksworkshop.com/docs/fundamentals/exposing/ingress/multiple-ingress)
+- `[도전과제6]` How to rapidly scale your application with ALB on EKS (without losing traffic) - [링크](https://aws.amazon.com/blogs/containers/how-to-rapidly-scale-your-application-with-alb-on-eks-without-losing-traffic/)
+    - [AWS][EKS] Zero downtime deployment(RollingUpdate) when using AWS Load Balancer Controller on Amazon EKS - [링크](https://easoncao.com/zero-downtime-deployment-when-using-alb-ingress-controller-on-amazon-eks-and-prevent-502-error/)
+    - pod graceful shutdown - [링크](https://linuxer.name/2023/03/pod-graceful-shutdown/)
+- `[도전과제7]` Expose Amazon EKS pods through cross-account load balancer - [링크](https://aws.amazon.com/blogs/containers/expose-amazon-eks-pods-through-cross-account-load-balancer/)
+- `[도전과제8]` Exposing Kubernetes Applications, Part 2: AWS Load Balancer Controller - [링크](https://aws.amazon.com/blogs/containers/exposing-kubernetes-applications-part-2-aws-load-balancer-controller/)
+    1. EKS 생성 시 IRSA 설정 참고
+        <details><summary>설치</summary>
 
+        ```bash
+        apiVersion: eksctl.io/v1alpha5
+        kind: ClusterConfig
+        metadata:
+          name: aws-load-balancer-controller-walkthrough
+          region: ${AWS_REGION}
+          version: '1.23'
+        **iam:
+          withOIDC: true
+          serviceAccounts:
+            - metadata:
+                name: aws-load-balancer-controller
+                namespace: kube-system
+              attachPolicyARNs:
+                - arn:aws:iam::${AWS_ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy**
+        ...
+        ```
 
-<details><summary>실습</summary>
-
-</details>
-
-
-
-![구성](/Images/eks/eksn_67.png)
+        </details>
+        
+    2. AWS LB Ctrl Helm Chart 설치
+    3. ~
+- `[도전과제9]` Exposing Kubernetes Applications, Part 3: NGINX Ingress Controller - [링크](https://aws.amazon.com/blogs/containers/exposing-kubernetes-applications-part-3-nginx-ingress-controller/) [Rewrite](https://nauco.tistory.com/94)
+- `[도전과제10]` EC2 ENA의 [linklocal_allowance_exceeded](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/metrics-collected-by-CloudWatch-agent.html#linux-metrics-enabled-by-CloudWatch-agent) 메트릭을 프로메테우스로 수집 - [링크](https://aws.amazon.com/ko/blogs/mt/monitoring-coredns-for-dns-throttling-issues-using-aws-open-source-monitoring-services/)
+- `[도전과제11]` Leveraging CNI custom networking alongside security groups for pods in Amazon EKS - [링크](https://aws.amazon.com/blogs/containers/leveraging-cni-custom-networking-alongside-security-groups-for-pods-in-amazon-eks/)
+- `[도전과제12]` Using AWS Load Balancer Controller for blue/green deployment, canary deployment and A/B testing - [링크](https://aws.amazon.com/blogs/containers/using-aws-load-balancer-controller-for-blue-green-deployment-canary-deployment-and-a-b-testing/)
+- `[도전과제13]` How to use Application Load Balancer and Amazon Cognito to authenticate users for your Kubernetes web apps - [링크](https://aws.amazon.com/blogs/containers/how-to-use-application-load-balancer-and-amazon-cognito-to-authenticate-users-for-your-kubernetes-web-apps/)
+- `[도전과제14]` EKS에 NodeLocal DNS Cache 설정으로 클러스터의 DNS 성능 향상 - [Docs](https://kubernetes.io/docs/tasks/administer-cluster/nodelocaldns/) [블로깅](https://kim-dragon.tistory.com/281)
+- `[도전과제15]` Addressing latency and data transfer costs on EKS using Istio - [링크](https://aws.amazon.com/blogs/containers/addressing-latency-and-data-transfer-costs-on-eks-using-istio/)
+- `[도전과제16]` Deploy a gRPC-based application on an Amazon EKS cluster and access it with an Application Load Balancer - [링크](https://docs.aws.amazon.com/prescriptive-guidance/latest/patterns/deploy-a-grpc-based-application-on-an-amazon-eks-cluster-and-access-it-with-an-application-load-balancer.html)
+- `[도전과제17]` Optimize webSocket applications scaling with API Gateway on Amazon EKS - [Link](https://aws.amazon.com/ko/blogs/containers/optimize-websocket-applications-scaling-with-api-gateway-on-amazon-eks/)
+- `[도전과제18]` Use shared VPC subnets in Amazon EKS - [Link](https://aws.amazon.com/ko/blogs/containers/use-shared-vpcs-in-amazon-eks/)
+- `[도전과제19]` Recent changes to the CoreDNS add-on - [Link](https://aws.amazon.com/ko/blogs/containers/recent-changes-to-the-coredns-add-on/)
+- `[도전과제20]` Automating custom networking to solve IPv4 exhaustion in Amazon EKS - [Link](https://aws.amazon.com/ko/blogs/containers/automating-custom-networking-to-solve-ipv4-exhaustion-in-amazon-eks/)
+- `[도전과제21]` A deeper look at Ingress Sharing and Target Group Binding in AWS Load Balancer Controller - [Link](https://aws.amazon.com/ko/blogs/containers/a-deeper-look-at-ingress-sharing-and-target-group-binding-in-aws-load-balancer-controller/)
+- `[도전과제22]` Using Istio Traffic Management on Amazon EKS to Enhance User Experience - [Link](https://aws.amazon.com/ko/blogs/opensource/using-istio-traffic-management-to-enhance-user-experience/)
+- `[도전과제23]` Getting Started with Istio on Amazon EKS - [Link](https://aws.amazon.com/ko/blogs/opensource/getting-started-with-istio-on-amazon-eks/)
+- `[도전과제24]` Avoiding Errors & Timeouts with Kubernetes Applications and AWS Load Balancers - [Link](https://aws.github.io/aws-eks-best-practices/networking/loadbalancing/loadbalancing/)
+- `[도전과제25]` ALB 경우 인증서 ARN 지정 없이, 자동 발견 가능 : 방안1(ingress tls), 방안2(ingress rule host) - [Link](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.7/guide/ingress/cert_discovery/)
+- `EKS Workshop`
+    - **Prefix Delegation :** https://www.eksworkshop.com/docs/networking/vpc-cni/prefix/
+    - **Custom Networking :** https://www.eksworkshop.com/docs/networking/vpc-cni/custom-networking/
+    - **Security Groups for Pods :** https://www.eksworkshop.com/docs/networking/vpc-cni/security-groups-for-pods/
+    - **Network Policies :** https://www.eksworkshop.com/docs/networking/vpc-cni/network-policies/
+    - **Amazon VPC Lattice :** https://www.eksworkshop.com/docs/networking/vpc-lattice/
