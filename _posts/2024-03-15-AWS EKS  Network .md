@@ -1089,37 +1089,33 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
 
 -  Route53 정보 확인 및 변수 지정~
 
-    ~~~
+  ~~~
 
-    # 자신의 도메인 변수 지정 : 소유하고 있는 자신의 도메인을 입력하시면 됩니다
-    MyDomain=<자신의 도메인>
-    MyDomain=base-on.com
-    echo "export MyDomain=gasida.link" >> /etc/profile
+  # 자신의 도메인 변수 지정 : 소유하고 있는 자신의 도메인을 입력하시면 됩니다
+  MyDomain=<자신의 도메인>
+  MyDomain=base-on.com
+  echo "export MyDomain=gasida.link" >> /etc/profile
+  # 자신의 Route 53 도메인 ID 조회 및 변수 지정
+  aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." | jq
+  aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Name"
+  aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text
+  MyDnzHostedZoneId=`aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text`
+  echo $MyDnzHostedZoneId
+  # (옵션) NS 레코드 타입 첫번째 조회
+  aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'NS']" | jq -r '.[0].ResourceRecords[].Value'
+  # (옵션) A 레코드 타입 모두 조회
+  aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']"
+  # A 레코드 타입 조회
+  aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq
+  aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" | jq
+  aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" --output text
+  # A 레코드 값 반복 조회
+  while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
+  
+  ~~~
 
-    # 자신의 Route 53 도메인 ID 조회 및 변수 지정
-    aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." | jq
-    aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Name"
-    aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text
-    MyDnzHostedZoneId=`aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text`
-    echo $MyDnzHostedZoneId
+   - Exteral DNS 설치 [참조](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
 
-    # (옵션) NS 레코드 타입 첫번째 조회
-    aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'NS']" | jq -r '.[0].ResourceRecords[].Value'
-    # (옵션) A 레코드 타입 모두 조회
-    aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']"
-
-    # A 레코드 타입 조회
-    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq
-    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" | jq
-    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" --output text
-
-    # A 레코드 값 반복 조회
-    while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
-
-    ~~~
-
-
-    - Exteral DNS 설치 [참조](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
 
     ~~~
 
@@ -1715,6 +1711,8 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
     # 설치 확인
     kubectl get pod,svc
     
+
+
     # ratings 파드에서 exec(curl)로 productpage 접속하여 정상 동작 확인
     # kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}'
     kubectl exec "$(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}')" -c ratings -- curl -sS productpage:9080/productpage | grep -o "<title>.*</title>"
