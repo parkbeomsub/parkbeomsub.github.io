@@ -132,7 +132,7 @@ for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo ip -c route;
 
 ![구성](/Images/eks/eksn_24.png)
 
-- [실습] 테스트용 파드 생성 - (nicolaka/netshoot)[https://github.com/nicolaka/netshoot]
+- [실습] 테스트용 파드 생성 - [nicolaka/netshoot](https://github.com/nicolaka/netshoot)
 
 ~~~
 
