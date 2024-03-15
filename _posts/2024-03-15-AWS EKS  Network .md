@@ -8,7 +8,7 @@ toc: true
 
 
 # AWS EKS  Network
-[**실습구성 링크**](https://parkbeomsub.github.io/aws/AWS-EKS-%EC%84%A4%EC%B9%98(addon-AWS-CNI,-Core-DNS,-kube-proxy)/)
+[ 실습구성 링크 ](https://parkbeomsub.github.io/aws/AWS-EKS-%EC%84%A4%EC%B9%98(addon-AWS-CNI,-Core-DNS,-kube-proxy)/)
 
 
 
@@ -26,11 +26,11 @@ toc: true
     sudo nsenter -t {PID} -n ip -c addr
     ~~~
 
-    **AWS CNI** :   Container Network Interface 는 k8s 네트워크 환경을 구성해준다 [링크1](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
+     AWS CNI  :   Container Network Interface 는 k8s 네트워크 환경을 구성해준다 [링크1](https://kubernetes.io/docs/concepts/cluster-administration/networking/)
     [링크2](https://kubernetes.io/docs/concepts/cluster-administration/addons/#networking-and-network-policy)
 
     - supports native VPC networking with the Amazon VPC Container Network Interface (CNI) plugin for Kubernetes.
-    - **VPC 와 통합** : VPC Flow logs , VPC 라우팅 정책, 보안 그룹(Security group) 을 사용 가능함
+    -  VPC 와 통합  : VPC Flow logs , VPC 라우팅 정책, 보안 그룹(Security group) 을 사용 가능함
     - This plugin assigns an IP address from your VPC to each pod.
     - VPC ENI 에 미리 할당된 IP(=Local-IPAM Warm IP Pool)를 파드에서 사용할 수 있음
   
@@ -111,7 +111,7 @@ ssh ec2-user@$N1 sudo iptables -t nat -L -n -v
 - coredns 파드는 veth 으로 호스트에는 eniY@ifN 인터페이스와 파드에 eth0 과 연결되어 있다
 
 
-**인스턴스의 네트워크 정보 확인 : 프라이빗 IP와 보조 프라이빗 IP 확인**
+ 인스턴스의 네트워크 정보 확인 : 프라이빗 IP와 보조 프라이빗 IP 확인 
 
 ![구성](/Images/eks/eksn_26.png)
 - 네트워크인터페이스(ENI)에 설명 내용 확인해보자 : 주ENI와 추가ENI의 설명 차이점 확인
@@ -193,9 +193,9 @@ for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo ip -c route;
 ![구성](/Images/eks/eksn_29.png)
 
 
-- 파드가 생성되면, **워커 노드**에 **eniY@ifN** **추가**되고 라우팅 테이블에도 정보가 추가된다
+- 파드가 생성되면,  워커 노드 에  eniY@ifN   추가 되고 라우팅 테이블에도 정보가 추가된다
 
-- 테스트용 파드 **eniY 정보 확인** - 워커 노드 EC2
+- 테스트용 파드  eniY 정보 확인  - 워커 노드 EC2
 
 ~~~
 
@@ -261,8 +261,8 @@ kubectl exec -it $PODNAME3 -- ip -br -c addr
 </details>
 
 ## 노드 간 파드 통신
-- **목표** : 파드간 통신 시 tcpdump 내용을 확인하고 통신 과정을 알아본다
-- **파드간 통신 흐름** : AWS VPC CNI 경우 별도의 오버레이(Overlay) 통신 기술 없이, VPC Native 하게 파드간 직접 통신이 가능하다
+-  목표  : 파드간 통신 시 tcpdump 내용을 확인하고 통신 과정을 알아본다
+-  파드간 통신 흐름  : AWS VPC CNI 경우 별도의 오버레이(Overlay) 통신 기술 없이, VPC Native 하게 파드간 직접 통신이 가능하다
   
 ![구성](/Images/eks/eksn_34.png)
 
@@ -327,7 +327,7 @@ default via 192.168.1.1 dev eth0
 
 ## 파드에서 외부 통신
 
-- **파드에서 외부 통신 흐름** : iptable 에 SNAT 을 통하여 노드의 eth0 IP로 변경되어서 외부와 통신됨
+-  파드에서 외부 통신 흐름  : iptable 에 SNAT 을 통하여 노드의 eth0 IP로 변경되어서 외부와 통신됨
 
 ![구성](/Images/eks/eksn_37.png)
 
@@ -338,43 +338,43 @@ default via 192.168.1.1 dev eth0
 
 <details><summary>실습</summary>
 
-- **파드에서 외부 통신** 테스트 및 확인
+-  파드에서 외부 통신  테스트 및 확인
 - 파드 shell 실행 후 외부로 ping 테스트 & 워커 노드에서 tcpdump 및 iptables 정보 확인
 ~~~
 
 
-**# 작업용 EC2 :** pod-1 Shell 에서 외부로 ping
+ # 작업용 EC2 :  pod-1 Shell 에서 외부로 ping
 kubectl exec -it $PODNAME1 -- ping -c 1 www.google.com
 kubectl exec -it $PODNAME1 -- ping -i 0.1 www.google.com
 
-**# 워커 노드 EC2** : TCPDUMP 확인
+ # 워커 노드 EC2  : TCPDUMP 확인
 sudo tcpdump -i any -nn icmp
 sudo tcpdump -i eth0 -nn icmp
 
-**# 워커 노드 EC2** : 퍼블릭IP 확인
+ # 워커 노드 EC2  : 퍼블릭IP 확인
 for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i curl -s ipinfo.io/ip; echo; echo; done
 
-**# 작업용 EC2 :** pod-1 Shell 에서 외부 접속 확인 - 공인IP는 어떤 주소인가?
+ # 작업용 EC2 :  pod-1 Shell 에서 외부 접속 확인 - 공인IP는 어떤 주소인가?
 ## The right way to check the weather - [링크](https://github.com/chubin/wttr.in)
 for i in $PODNAME1 $PODNAME2 $PODNAME3; do echo ">> Pod : $i <<"; kubectl exec -it $i -- curl -s ipinfo.io/ip; echo; echo; done
-kubectl exec -it $PODNAME1 -- curl -s **wttr.in**/seoul
+kubectl exec -it $PODNAME1 -- curl -s  wttr.in /seoul
 kubectl exec -it $PODNAME1 -- curl -s wttr.in/seoul?format=3
 kubectl exec -it $PODNAME1 -- curl -s wttr.in/Moon
 kubectl exec -it $PODNAME1 -- curl -s wttr.in/:help
 
-**# 워커 노드 EC2**
+ # 워커 노드 EC2 
 ## 출력된 결과를 보고 어떻게 빠져나가는지 고민해보자!
 ip rule
 ip route show table main
-sudo **iptables -L -n -v -t nat
-sudo iptables -t nat -S**
+sudo  iptables -L -n -v -t nat
+sudo iptables -t nat -S 
 
 # 파드가 외부와 통신시에는 아래 처럼 'AWS-SNAT-CHAIN-0' 룰(rule)에 의해서 SNAT 되어서 외부와 통신!
 # 참고로 뒤 IP는 eth0(ENI 첫번째)의 IP 주소이다
 # --random-fully 동작 - [링크1](https://ssup2.github.io/issue/Linux_TCP_SYN_Packet_Drop_SNAT_Port_Race_Condition/)  [링크2](https://ssup2.github.io/issue/Kubernetes_TCP_Connection_Delay_VXLAN_CNI_Plugin/)
 sudo iptables -t nat -S | grep 'A AWS-SNAT-CHAIN'
--A AWS-SNAT-CHAIN-0 ! -d **192.168.0.0/16** -m comment --comment "AWS SNAT CHAIN" -j RETURN
--A AWS-SNAT-CHAIN-0 ! -o vlan+ -m comment --comment "AWS, SNAT" -m addrtype ! --dst-type LOCAL -j SNAT --to-source **192.168.1.251** --random-fully
+-A AWS-SNAT-CHAIN-0 ! -d  192.168.0.0/16  -m comment --comment "AWS SNAT CHAIN" -j RETURN
+-A AWS-SNAT-CHAIN-0 ! -o vlan+ -m comment --comment "AWS, SNAT" -m addrtype ! --dst-type LOCAL -j SNAT --to-source  192.168.1.251  --random-fully
 
 ## 아래 'mark 0x4000/0x4000' 매칭되지 않아서 RETURN 됨!
 -A KUBE-POSTROUTING -m mark ! --mark 0x4000/0x4000 -j RETURN
@@ -382,12 +382,12 @@ sudo iptables -t nat -S | grep 'A AWS-SNAT-CHAIN'
 -A KUBE-POSTROUTING -m comment --comment "kubernetes service traffic requiring SNAT" -j MASQUERADE --random-fully
 ...
 
-# 카운트 확인 시 AWS-SNAT-CHAIN-0에 매칭되어, 목적지가 **192.168.0.0/16** 아니고 외부 빠져나갈때 SNAT **192.168.1.251(EC2 노드1 IP)** 변경되어 나간다!
+# 카운트 확인 시 AWS-SNAT-CHAIN-0에 매칭되어, 목적지가  192.168.0.0/16  아니고 외부 빠져나갈때 SNAT  192.168.1.251(EC2 노드1 IP)  변경되어 나간다!
 sudo iptables -t filter --zero; sudo iptables -t nat --zero; sudo iptables -t mangle --zero; sudo iptables -t raw --zero
 watch -d 'sudo iptables -v --numeric --table nat --list AWS-SNAT-CHAIN-0; echo ; sudo iptables -v --numeric --table nat --list KUBE-POSTROUTING; echo ; sudo iptables -v --numeric --table nat --list POSTROUTING'
 
 # conntrack 확인
-**for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo conntrack -L -n |grep -v '169.254.169'; echo; done**
+ for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo conntrack -L -n |grep -v '169.254.169'; echo; done 
 conntrack v1.4.5 (conntrack-tools): 
 icmp     1 28 src=172.30.66.58 dst=8.8.8.8 type=8 code=0 id=34392 src=8.8.8.8 dst=172.30.85.242 type=0 code=0 id=50705 mark=128 use=1
 tcp      6 23 TIME_WAIT src=172.30.66.58 dst=34.117.59.81 sport=58144 dport=80 src=34.117.59.81 dst=172.30.85.242 sport=80 dport=44768 [ASSURED] mark=128 use=1
@@ -448,8 +448,8 @@ kubectl get svc -n kube-system kube-ops-view -o jsonpath={.status.loadBalancer.i
 
 - Secondary IPv4 addresses (기본값) : 인스턴스 유형에 최대 ENI 갯수와 할당 가능 IP 수를 조합하여 선정
 
-- **워커 노드의 인스턴스 타입 별 파드 생성 갯수 제한**
-    - **인스턴스 타입** 별 ENI 최대 갯수와 할당 가능한 최대 IP 갯수에 따라서 파드 배치 갯수가 결정됨
+-  워커 노드의 인스턴스 타입 별 파드 생성 갯수 제한 
+    -  인스턴스 타입  별 ENI 최대 갯수와 할당 가능한 최대 IP 갯수에 따라서 파드 배치 갯수가 결정됨
     - 단, aws-node 와 kube-proxy 파드는 호스트의 IP를 사용함으로 최대 갯수에서 제외함
 
     ![구성](/Images/eks/eksn_44.png)
@@ -463,8 +463,8 @@ kubectl get svc -n kube-system kube-ops-view -o jsonpath={.status.loadBalancer.i
 
 ```bash
 # t3 타입의 정보(필터) 확인
-aws ec2 describe-instance-types --filters Name=instance-type,Values=**t3.*** \
- --query "InstanceTypes[].{**Type**: InstanceType, **MaxENI**: NetworkInfo.MaximumNetworkInterfaces, **IPv4addr**: NetworkInfo.Ipv4AddressesPerInterface}" \
+aws ec2 describe-instance-types --filters Name=instance-type,Values= t3. * \
+ --query "InstanceTypes[].{ Type : InstanceType,  MaxENI : NetworkInfo.MaximumNetworkInterfaces,  IPv4addr : NetworkInfo.Ipv4AddressesPerInterface}" \
  --output table
 --------------------------------------
 |        DescribeInstanceTypes       |
@@ -472,8 +472,8 @@ aws ec2 describe-instance-types --filters Name=instance-type,Values=**t3.*** \
 | IPv4addr | MaxENI   |    Type      |
 +----------+----------+--------------+
 |  15      |  4       |  t3.2xlarge  |
-|  **6**       |  **3**       |  **t3.medium**   |
-|  **12**      |  **3**       |  **t3.large**    |
+|   6        |   3        |   t3.medium    |
+|   12       |   3        |   t3.large     |
 |  15      |  4       |  t3.xlarge   |
 |  2       |  2       |  t3.micro    |
 |  2       |  2       |  t3.nano     |
@@ -481,23 +481,23 @@ aws ec2 describe-instance-types --filters Name=instance-type,Values=**t3.*** \
 +----------+----------+--------------+
 
 # c5 타입의 정보(필터) 확인
-aws ec2 describe-instance-types --filters Name=instance-type,Values=**c5*.*** \
- --query "InstanceTypes[].{**Type**: InstanceType, **MaxENI**: NetworkInfo.MaximumNetworkInterfaces, **IPv4addr**: NetworkInfo.Ipv4AddressesPerInterface}" \
+aws ec2 describe-instance-types --filters Name=instance-type,Values= c5*. * \
+ --query "InstanceTypes[].{ Type : InstanceType,  MaxENI : NetworkInfo.MaximumNetworkInterfaces,  IPv4addr : NetworkInfo.Ipv4AddressesPerInterface}" \
  --output table
 
 # 파드 사용 가능 계산 예시 : aws-node 와 kube-proxy 파드는 host-networking 사용으로 IP 2개 남음
 ((MaxENI * (IPv4addr-1)) + 2)
-**t3.medium** 경우 : ((3 * (6 - 1) + **2** ) = **17개 >>** aws-node 와 kube-proxy 2개 제외하면 **15개**
+ t3.medium  경우 : ((3 * (6 - 1) +  2  ) =  17개 >>  aws-node 와 kube-proxy 2개 제외하면  15개 
 
 # 워커노드 상세 정보 확인 : 노드 상세 정보의 Allocatable 에 pods 에 17개 정보 확인
-**kubectl describe node | grep Allocatable: -A6**
+ kubectl describe node | grep Allocatable: -A6 
 Allocatable:
   cpu:                         1930m
   ephemeral-storage:           27905944324
   hugepages-1Gi:               0
   hugepages-2Mi:               0
   memory:                      3388360Ki
-  **pods:                        17**
+   pods:                        17 
 ```
 
 </details>
@@ -517,7 +517,7 @@ watch -d 'kubectl get pods -o wide'
 # 작업용 EC2 - 터미널2
 # 디플로이먼트 생성
 curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/2/nginx-dp.yaml
-**kubectl apply -f nginx-dp.yaml**
+ kubectl apply -f nginx-dp.yaml 
 
 # 파드 확인
 kubectl get pod -o wide
@@ -533,7 +533,7 @@ kubectl scale deployment nginx-deployment --replicas=15
 kubectl scale deployment nginx-deployment --replicas=30
 
 # 파드 증가 테스트 >> 파드 정상 생성 확인, 워커 노드에서 eth, eni 갯수 확인 >> 어떤일이 벌어졌는가?
-**kubectl scale deployment nginx-deployment --replicas=50**
+ kubectl scale deployment nginx-deployment --replicas=50 
 
 # 파드 생성 실패!
 kubectl get pods | grep Pending
@@ -545,10 +545,10 @@ kubectl describe pod <Pending 파드> | grep Events: -A5
 Events:
   Type     Reason            Age   From               Message
   ----     ------            ----  ----               -------
-  Warning  FailedScheduling  45s   default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2 **Too many pods**. preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
+  Warning  FailedScheduling  45s   default-scheduler  0/3 nodes are available: 1 node(s) had untolerated taint {node-role.kubernetes.io/control-plane: }, 2  Too many pods . preemption: 0/3 nodes are available: 1 Preemption is not helpful for scheduling, 2 No preemption victims found for incoming pod.
 
 # 디플로이먼트 삭제
-**kubectl delete deploy nginx-deployment**
+ kubectl delete deploy nginx-deployment 
 
 ~~~
 
@@ -588,7 +588,7 @@ Events:
 
 
 
-**해결방안** : [해결 방안 : Prefix Delegation, WARM & MIN IP/Prefix Targets, Custom Network](https://docs.google.com/spreadsheets/d/1yhkuBJBY2iO2Ax5FcbDMdWD5QLTVO6Y_kYt_VumnEtI/edit#gid=1994017257)
+ 해결방안  : [해결 방안 : Prefix Delegation, WARM & MIN IP/Prefix Targets, Custom Network](https://docs.google.com/spreadsheets/d/1yhkuBJBY2iO2Ax5FcbDMdWD5QLTVO6Y_kYt_VumnEtI/edit#gid=1994017257)
 
 
 ## Service & AWS LoadBalancer Controller
@@ -600,14 +600,14 @@ Events:
 
 `NLB 모드 전체 정리`
 
-1. **인스턴스 유형**
+1.  인스턴스 유형 
     1. `externalTrafficPolicy` : ClusterIP ⇒ 2번 분산 및 SNAT으로 Client IP 확인 불가능 ← `LoadBalancer` 타입 (기본 모드) 동작
     2. `externalTrafficPolicy` : Local ⇒ 1번 분산 및 ClientIP 유지, 워커 노드의 iptables 사용함
     - 상세 설명
         
-        **통신 흐름**
+         통신 흐름 
         
-        **요약** : 외부 클라이언트가 '로드밸런서' 접속 시 부하분산 되어 노드 도달 후 iptables 룰로 목적지 파드와 통신됨
+         요약  : 외부 클라이언트가 '로드밸런서' 접속 시 부하분산 되어 노드 도달 후 iptables 룰로 목적지 파드와 통신됨
         
         !https://s3-us-west-2.amazonaws.com/secure.notion-static.com/154fbeb0-5b37-42b9-93f8-90c76d1ad200/Untitled.png
         
@@ -616,9 +616,9 @@ Events:
         - 노드는 외부에 공개되지 않고 로드밸런서만 외부에 공개되어, 외부 클라이언트는 로드밸랜서에 접속을 할 뿐 내부 노드의 정보를 알 수 없다
         - 로드밸런서가 부하분산하여 파드가 존재하는 노드들에게 전달한다, iptables 룰에서는 자신의 노드에 있는 파드만 연결한다 (`externalTrafficPolicy: local`)
         - DNAT 2번 동작 : 첫번째(로드밸런서 접속 후 빠져 나갈때), 두번째(노드의 iptables 룰에서 파드IP 전달 시)
-        - 외부 클라이언트 IP 보존(유지) : AWS NLB 는 **타켓**이 **인스턴스**일 경우 클라이언트 IP를 유지, iptables 룰 경우도 `externalTrafficPolicy` 로 클라이언트 IP를 보존
+        - 외부 클라이언트 IP 보존(유지) : AWS NLB 는  타켓 이  인스턴스 일 경우 클라이언트 IP를 유지, iptables 룰 경우도 `externalTrafficPolicy` 로 클라이언트 IP를 보존
         
-        **부하분산 최적화** : 노드에 파드가 없을 경우 '로드밸런서'에서 노드에 헬스 체크(상태 검사)가 실패하여 해당 노드로는 외부 요청 트래픽을 전달하지 않는다
+         부하분산 최적화  : 노드에 파드가 없을 경우 '로드밸런서'에서 노드에 헬스 체크(상태 검사)가 실패하여 해당 노드로는 외부 요청 트래픽을 전달하지 않는다
         
         !https://s3-us-west-2.amazonaws.com/secure.notion-static.com/5c640a55-2f67-4b4d-b4b0-27b565ea0d73/Untitled.png
         
@@ -628,7 +628,7 @@ Events:
         [AWS NLB - Client IP 확인 & Proxy protocol](https://www.notion.so/AWS-NLB-Client-IP-Proxy-protocol-57827e2c83fc474992b37e65db81f669?pvs=21)
 
         
-        **IP 유형 ⇒ 반드시 AWS LoadBalancer 컨트롤러 파드 및 정책 설정이 필요함!**
+         IP 유형 ⇒ 반드시 AWS LoadBalancer 컨트롤러 파드 및 정책 설정이 필요함! 
         1. `Proxy Protocol v2 비활성화` ⇒ NLB에서 바로 파드로 인입, 단 ClientIP가 NLB로 SNAT 되어 Client IP 확인 불가능
         2. `Proxy Protocol v2 활성화` ⇒ NLB에서 바로 파드로 인입 및 ClientIP 확인 가능(→ 단 PPv2 를 애플리케이션이 인지할 수 있게 설정 필요)
 
@@ -869,27 +869,27 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
 <details><summary>심화 -도전 </summary>
 
 
-- **(심화) Pod readiness gate** : ALB/NLB 대상(ip mode)이 ALB/NLB의 헬스체크에 의해 정상일 경우 해당 파드로 전달할 수 있는 기능 - [Link](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.7/deploy/pod_readiness_gate/) [K8S](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-readiness-gate)
+-  (심화) Pod readiness gate  : ALB/NLB 대상(ip mode)이 ALB/NLB의 헬스체크에 의해 정상일 경우 해당 파드로 전달할 수 있는 기능 - [Link](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.7/deploy/pod_readiness_gate/) [K8S](https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-readiness-gate)
     - 사전 준비
     
     ```bash
     # 바로 위에서 실습 리소스 삭제했다면, 다시 생성 : deregistration_delay.timeout_seconds=60 확인
-    **kubectl apply -f echo-service-nlb.yaml**
+     kubectl apply -f echo-service-nlb.yaml 
     kubectl scale deployment deploy-echo --replicas=1
     
     #
-    **kubectl get pod -owide**
+     kubectl get pod -owide 
     NAME                           READY   STATUS    RESTARTS   AGE   IP              NODE                                               NOMINATED NODE   READINESS GATES
     deploy-echo-7f579ff9d7-gqdf5   1/1     Running   0          20m   192.168.2.153   ip-192-168-2-108.ap-northeast-2.compute.internal   <none>           <none>
     
     # mutatingwebhookconfigurations 확인 : mutating 대상(네임스페이스에 아래 매칭 시)
     kubectl get mutatingwebhookconfigurations
-    **kubectl get mutatingwebhookconfigurations aws-load-balancer-webhook -o yaml | kubectl neat | yh**
+     kubectl get mutatingwebhookconfigurations aws-load-balancer-webhook -o yaml | kubectl neat | yh 
     ...
       name: mpod.elbv2.k8s.aws
-      **namespaceSelector**: 
+       namespaceSelector : 
         matchExpressions: 
-        - key: **elbv2.k8s.aws/pod-readiness-gate-inject**
+        - key:  elbv2.k8s.aws/pod-readiness-gate-inject 
           operator: In
           values: 
           - enabled
@@ -902,7 +902,7 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
     ...
     
     # 현재 확인
-    **kubectl get ns --show-labels**
+     kubectl get ns --show-labels 
     NAME              STATUS   AGE   LABELS
     default           Active   75m   kubernetes.io/metadata.name=default
     kube-node-lease   Active   75m   kubernetes.io/metadata.name=kube-node-lease
@@ -918,22 +918,22 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
     while true; do aws elbv2 describe-target-health --target-group-arn $TARGET_GROUP_ARN --output text; echo; done
     
     #
-    **kubectl label namespace default elbv2.k8s.aws/pod-readiness-gate-inject=enabled**
+     kubectl label namespace default elbv2.k8s.aws/pod-readiness-gate-inject=enabled 
     kubectl get ns --show-labels
     
     # READINESS GATES 항목 추가 확인
     kubectl describe pod
-    **kubectl get pod -owide**
-    NAME                           READY   STATUS    RESTARTS   AGE   IP              NODE                                               NOMINATED NODE   **READINESS GATES**
+     kubectl get pod -owide 
+    NAME                           READY   STATUS    RESTARTS   AGE   IP              NODE                                               NOMINATED NODE    READINESS GATES 
     deploy-echo-7f579ff9d7-gqdf5   1/1     Running   0          25m   192.168.2.153   ip-192-168-2-108.ap-northeast-2.compute.internal   <none>           <none>
     
     #
-    **kubectl delete pod --all**
-    **kubectl get pod -owide**
-    NAME                           READY   STATUS    RESTARTS   AGE     IP              NODE                                               NOMINATED NODE   **READINESS GATES**
+     kubectl delete pod --all 
+     kubectl get pod -owide 
+    NAME                           READY   STATUS    RESTARTS   AGE     IP              NODE                                               NOMINATED NODE    READINESS GATES 
     deploy-echo-6959b47ddf-h9vhc   1/1     Running   0          3m21s   192.168.1.127   ip-192-168-1-113.ap-northeast-2.compute.internal   <none>           1/1
     
-    **kubectl describe pod**
+     kubectl describe pod 
     ...
     Readiness Gates:
       Type                                                          Status
@@ -947,7 +947,7 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
       PodScheduled                                                  True 
     ...
     
-    **kubectl get pod -o yaml | yh**
+     kubectl get pod -o yaml | yh 
     ...
         readinessGates: 
         - conditionType: target-health.elbv2.k8s.aws/k8s-default-svcnlbip-5eff23b37f
@@ -957,7 +957,7 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
         - lastProbeTime: null
           lastTransitionTime: "2024-03-10T02:00:50Z"
           status: "True"
-          type: **target-health.elbv2.k8s.aws/k8s-default-svcnlbip-5eff23b37f**
+          type:  target-health.elbv2.k8s.aws/k8s-default-svcnlbip-5eff23b37f 
     ...
     
     # 분산 접속 확인
@@ -968,8 +968,8 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
     
     - 실습 리소스 삭제:  `kubectl delete deploy deploy-echo; kubectl delete svc svc-nlb-ip-type`
     
-- NLB 대상 타켓을 **Instance mode** 로 설정해보기
-- NLB IP Target & **Proxy Protocol v2** 활성화 : NLB에서 바로 파드로 인입 및 ClientIP 확인 설정 - [링크](https://www.notion.so/AWS-NLB-Client-IP-Proxy-protocol-57827e2c83fc474992b37e65db81f669?pvs=21) [image](https://hub.docker.com/r/gasida/httpd/tags) [참고](https://canaryrelease.tistory.com/42)
+- NLB 대상 타켓을  Instance mode  로 설정해보기
+- NLB IP Target &  Proxy Protocol v2  활성화 : NLB에서 바로 파드로 인입 및 ClientIP 확인 설정 - [링크](https://www.notion.so/AWS-NLB-Client-IP-Proxy-protocol-57827e2c83fc474992b37e65db81f669?pvs=21) [image](https://hub.docker.com/r/gasida/httpd/tags) [참고](https://canaryrelease.tistory.com/42)
 
 
 
@@ -1082,7 +1082,7 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
 - 권한을 주는 방법이 다양한데 ( Node IAM Role, Static credentials, IRSA )
 
 
-해당 실습을 위해 도메인이 필요합니다./ 없으시면 참고 부탁드리며 저 개인 도메인은 **base-on.com**입니다.
+해당 실습을 위해 도메인이 필요합니다./ 없으시면 참고 부탁드리며 저 개인 도메인은  base-on.com 입니다.
 
 <details><summary>실습 </summary>
 
@@ -1262,11 +1262,11 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
 
 <details><summary>서비스 매시(Service Mesh)</summary>
 
-    - **등장 배경** : 마이크로서비스 아키텍처 환경의 시스템 전체 모니터링의 어려움, 운영 시 시스템 문제 발생할 때 원인과 병목 구간 찾기 어려움
-    - **개념** : 마이크로서비스 간에 매시 형태의 **통신**이나 그 **경로**를 **제어** - 예) 이스티오(Istio), 링커드(Linkerd), AWS App Mesh - [링크](https://layer5.io/service-mesh-landscape)
-    - **기본 동작** : 파드 간 통신 경로에 프록시를 놓고 **트래픽 모니터링**이나 **트래픽 컨트롤** → 기존 애플리케이션 **코드에 수정 없이** 구성 가능!
-    - **트래픽 모니터링** : 요청의 '에러율, 레이턴시, 커넥션 개수, 요청 개수' 등 메트릭 모니터링, 특정 서비스간 혹은 특정 요청 경로로 필터링 → 원인 파악 용이!
-    - **트래픽 컨트롤** : 트래픽 시프팅(Traffic shifting), 서킷 브레이커(Circuit Breaker), 폴트 인젝션(Fault Injection), 속도 제한(Rate Limit)
+    -  등장 배경  : 마이크로서비스 아키텍처 환경의 시스템 전체 모니터링의 어려움, 운영 시 시스템 문제 발생할 때 원인과 병목 구간 찾기 어려움
+    -  개념  : 마이크로서비스 간에 매시 형태의  통신 이나 그  경로 를  제어  - 예) 이스티오(Istio), 링커드(Linkerd), AWS App Mesh - [링크](https://layer5.io/service-mesh-landscape)
+    -  기본 동작  : 파드 간 통신 경로에 프록시를 놓고  트래픽 모니터링 이나  트래픽 컨트롤  → 기존 애플리케이션  코드에 수정 없이  구성 가능!
+    -  트래픽 모니터링  : 요청의 '에러율, 레이턴시, 커넥션 개수, 요청 개수' 등 메트릭 모니터링, 특정 서비스간 혹은 특정 요청 경로로 필터링 → 원인 파악 용이!
+    -  트래픽 컨트롤  : 트래픽 시프팅(Traffic shifting), 서킷 브레이커(Circuit Breaker), 폴트 인젝션(Fault Injection), 속도 제한(Rate Limit)
         - 트래픽 시프팅(Traffic shifting) : 예시) 99% 기존앱 + 1% 신규앱 , 특정 단말/사용자는 신규앱에 전달하여 단계적으로 적용하는 카니리 배포 가능
         - 서킷 브레이커(Circuit Breaker) : 목적지 마이크로서비스에 문제가 있을 시 접속을 차단하고 출발지 마이크로서비스에 요청 에러를 반환 (연쇄 장애, 시스템 전제 장애 예방)
         - 폴트 인젝션(Fault Injection) : 의도적으로 요청을 지연 혹은 실패를 구현
@@ -1281,27 +1281,27 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     
     https://istio.io/latest/docs/ops/deployment/architecture/
     
-    - **Istio 구성요소와 envoy** : 컨트롤 플레인(**istiod**) , **데이터 플레인**(istio-proxy > **envoy**)
-        - **istiod** : **Pilot**(데이터 플레인과 통신하면서 라우팅 규칙을 동기화, ADS), **Gally**(Istio 와 K8S 연동, Endpoint 갱신 등), **Citadel**(연결 암호화, 인증서관리 등)
+    -  Istio 구성요소와 envoy  : 컨트롤 플레인( istiod ) ,  데이터 플레인 (istio-proxy >  envoy )
+        -  istiod  :  Pilot (데이터 플레인과 통신하면서 라우팅 규칙을 동기화, ADS),  Gally (Istio 와 K8S 연동, Endpoint 갱신 등),  Citadel (연결 암호화, 인증서관리 등)
             
             ![https://istio.io/latest/docs/concepts/security/](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/d2ed8eb7-3cc7-4470-86d7-ba855467a567/arch-sec.svg)
             
             https://istio.io/latest/docs/concepts/security/
             
-        - Envoy proxy : C++ 구현된 고성능 프록시, 네트워크의 투명성을 목표, 다양한 **필터체인** 지원(L3/L4, HTTP L7), 동적 configuration API 제공 - [링크](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy)
-    - 이스티오는 각 **파드** 안에 **사이드카**로 **엔보이 프록시**가 들어가 있는 형태
-    - 모든 마이크로서비스간 통신은 엔보이를 통과하여, **메트릭을 수집**하거나 **트래픽 컨트롤**을 할 수 있음
-    - 트래픽 컨트롤을 하기위해 엔보이 프록시에 **전송 룰**을 설정 → **컨트롤 플레인**의 **이스티오**가 정의된 정보를 기반으로 **엔보이 설정**을 하게 함
-    - 마이크로서비스 간의 통신을 mutual TLS 인증(**mTLS**)으로 서로 TLS 인증으로 암호화 할 수 있음
-    - 각 애플리케이션은 **파드** 내의 엔보이 프록시에 접속하기 위해 **localhost 에 TCP 접속**을 함
+        - Envoy proxy : C++ 구현된 고성능 프록시, 네트워크의 투명성을 목표, 다양한  필터체인  지원(L3/L4, HTTP L7), 동적 configuration API 제공 - [링크](https://www.envoyproxy.io/docs/envoy/latest/intro/what_is_envoy)
+    - 이스티오는 각  파드  안에  사이드카 로  엔보이 프록시 가 들어가 있는 형태
+    - 모든 마이크로서비스간 통신은 엔보이를 통과하여,  메트릭을 수집 하거나  트래픽 컨트롤 을 할 수 있음
+    - 트래픽 컨트롤을 하기위해 엔보이 프록시에  전송 룰 을 설정 →  컨트롤 플레인 의  이스티오 가 정의된 정보를 기반으로  엔보이 설정 을 하게 함
+    - 마이크로서비스 간의 통신을 mutual TLS 인증( mTLS )으로 서로 TLS 인증으로 암호화 할 수 있음
+    - 각 애플리케이션은  파드  내의 엔보이 프록시에 접속하기 위해  localhost 에 TCP 접속 을 함
 
 </details>
 
 
 <details><summary>Envoy 소개</summary>
 
--   **L7 Proxy** , Istio 의 Sidecar proxy 로 사용 - [링크](https://www.envoyproxy.io/docs/envoy/latest/intro/life_of_a_request) [주요 용어](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/intro/terminology)
-    - **Istio 구성요소와 envoy** : 컨트롤 플레인(istiod) - ADS 를 이용한 Configuration 동기화 - 데이터 플레인(istio-proxy > envoy)
+-    L7 Proxy  , Istio 의 Sidecar proxy 로 사용 - [링크](https://www.envoyproxy.io/docs/envoy/latest/intro/life_of_a_request) [주요 용어](https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/intro/terminology)
+    -  Istio 구성요소와 envoy  : 컨트롤 플레인(istiod) - ADS 를 이용한 Configuration 동기화 - 데이터 플레인(istio-proxy > envoy)
     
     ![https://blog.naver.com/alice_k106/222000680202](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/832f0d89-1e5c-4f32-a612-4125acbf1902/Untitled.png)
     
@@ -1311,11 +1311,11 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     
     https://www.envoyproxy.io/docs/envoy/latest/intro/life_of_a_request
     
-    - **Cluster** : envoy 가 트래픽을 포워드할 수 있는 논리적인 서비스 (엔드포인트 세트), 실제 요청이 처리되는 IP 또는 엔드포인트의 묶음을 의미.
-    - **Endpoint** : IP 주소, 네트워크 노드로 클러스터로 그룹핑됨, 실제 접근이 가능한 엔드포인트를 의미. 엔드포인트가 모여서 하나의 Cluster 가 된다.
-    - **Listener** : 무엇을 받을지 그리고 어떻게 처리할지 IP/Port 를 바인딩하고, 요청 처리 측면에서 다운스트림을 조정하는 역할.
-    - **Route** : Listener 로 들어온 요청을 어디로 라우팅할 것인지를 정의. 라우팅 대상은 일반적으로 Cluster 라는 것에 대해 이뤄지게 된다.
-    - **Filter** : Listener 로부터 서비스에 트래픽을 전달하기까지 요청 처리 파이프라인
+    -  Cluster  : envoy 가 트래픽을 포워드할 수 있는 논리적인 서비스 (엔드포인트 세트), 실제 요청이 처리되는 IP 또는 엔드포인트의 묶음을 의미.
+    -  Endpoint  : IP 주소, 네트워크 노드로 클러스터로 그룹핑됨, 실제 접근이 가능한 엔드포인트를 의미. 엔드포인트가 모여서 하나의 Cluster 가 된다.
+    -  Listener  : 무엇을 받을지 그리고 어떻게 처리할지 IP/Port 를 바인딩하고, 요청 처리 측면에서 다운스트림을 조정하는 역할.
+    -  Route  : Listener 로 들어온 요청을 어디로 라우팅할 것인지를 정의. 라우팅 대상은 일반적으로 Cluster 라는 것에 대해 이뤄지게 된다.
+    -  Filter  : Listener 로부터 서비스에 트래픽을 전달하기까지 요청 처리 파이프라인
     - UpStream : envoy 요청을 포워딩해서 연결하는 백엔드 네트워크 노드 - 사이드카일때 application app, 아닐때 원격 백엔드
     - DownStream : An entity connecting to envoy, In non-sidecar models this is a remote client
 
@@ -1351,18 +1351,18 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
 
 
 
-- **Envoy proxy 실습**
+-  Envoy proxy 실습 
     - envoy-demo.yaml
         
         ```yaml
-        **static**_resources:
+         static _resources:
         
-          **listeners**:
+           listeners :
           - name: listener_0
             address:
-              **socket_address**:
-                address: **0.0.0.0**
-                port_value: **10000**
+               socket_address :
+                address:  0.0.0.0 
+                port_value:  10000 
             filter_chains:
             - filters:
               - name: envoy.filters.network.http_connection_manager
@@ -1375,7 +1375,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
                       "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
                   http_filters:
                   - name: envoy.filters.http.router
-                  **route_config**:
+                   route_config :
                     name: local_route
                     virtual_hosts:
                     - name: local_service
@@ -1385,19 +1385,19 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
                           prefix: "/"
                         route:
                           host_rewrite_literal: www.envoyproxy.io
-                          **cluster**: service_envoyproxy_io
+                           cluster : service_envoyproxy_io
         
-          **clusters**:
+           clusters :
           - name: service_envoyproxy_io
             type: LOGICAL_DNS
             # Comment out the following line to test on v6 networks
             dns_lookup_family: V4_ONLY
-            **connect_timeout: 5s**
+             connect_timeout: 5s 
             load_assignment:
               cluster_name: service_envoyproxy_io
               endpoints:
               - lb_endpoints:
-                - **endpoint**:
+                -  endpoint :
                     address:
                       socket_address:
                         address: www.envoyproxy.io
@@ -1416,7 +1416,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     envoy -c envoy-demo.yaml
     
     # 에러 출력되면서 실행 실패
-    error initializing configuration 'envoy-demo.yaml': Field '**connect_timeout**' is missing in: name: "service_envoyproxy_io"
+    error initializing configuration 'envoy-demo.yaml': Field ' connect_timeout ' is missing in: name: "service_envoyproxy_io"
     
     # (터미널1) connect_timeout 추가 후 다시 실행
     sed -i'' -r -e "/dns_lookup_family/a\    connect_timeout: 5s" envoy-demo.yaml
@@ -1438,21 +1438,21 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     echo -e "Envoy Proxy Demo = http://$(curl -s ipinfo.io/ip):10000"
     
     # 연결 정보 확인
-    **ss -tnp**
+     ss -tnp 
     
     # (터미널1) envoy 실행 취소(CTRL+C) 후 (관리자페이지) 설정 덮어쓰기 - [링크](https://www.envoyproxy.io/docs/envoy/latest/start/quick-start/run-envoy#override-the-default-configuration)
     cat <<EOT> envoy-override.yaml
-    **admin**:
+     admin :
       address:
         socket_address:
-          address: **0.0.0.0**
-          port_value: **9902**
+          address:  0.0.0.0 
+          port_value:  9902 
     EOT
     envoy -c envoy-demo.yaml --config-yaml "$(cat envoy-override.yaml)"
     
-    # **웹브라우저**에서 **http://192.168.10.254:9902** 접속 확인!
+    #  웹브라우저 에서  http://192.168.10.254:9902  접속 확인!
     # 자신의PC(웹브라우저)에서 작업용EC2 접속 확인 >> 어느 사이트로 접속이 되는가?
-    echo -e "Envoy Proxy Demo = http://$(curl -s ipinfo.io/ip):**9902**"
+    echo -e "Envoy Proxy Demo = http://$(curl -s ipinfo.io/ip): 9902 "
     ```
     
     ![clusters 클릭 확인endpoint) , listeners 클릭 확인](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/598c68aa-9465-48ee-9a90-1a5a6e0a5340/Untitled.png)
@@ -1463,20 +1463,20 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
         
         ```yaml
         cat <<EOT> myhome.yaml
-        **admin**:
+         admin :
           address:
             socket_address:
-              address: **0.0.0.0**
-              port_value: **9902**
+              address:  0.0.0.0 
+              port_value:  9902 
         
-        **static**_resources:
+         static _resources:
         
-          **listeners**:
+           listeners :
           - name: listener_1
             address:
               socket_address:
                 address: 0.0.0.0
-                port_value: **20000**
+                port_value:  20000 
             filter_chains:
             - filters:
               - name: envoy.filters.network.http_connection_manager
@@ -1489,7 +1489,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
                       "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
                   http_filters:
                   - name: envoy.filters.http.router
-                  **route_config**:
+                   route_config :
                     name: local_route
                     virtual_hosts:
                     - name: local_service
@@ -1498,23 +1498,23 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
                       - match:
                           prefix: "/"
                         route:
-                          **cluster**: myhome
+                           cluster : myhome
         
-          **clusters**:
+           clusters :
           - name: myhome
             type: STATIC
             dns_lookup_family: V4_ONLY
-            **connect_timeout: 5s**
+             connect_timeout: 5s 
             lb_policy: ROUND_ROBIN
             load_assignment:
               cluster_name: myhome
               endpoints:
               - lb_endpoints:
-                - **endpoint**:
+                -  endpoint :
                     address:
                       socket_address:
-                        address: **127.0.0.1**
-                        port_value: **80**
+                        address:  127.0.0.1 
+                        port_value:  80 
         EOT
         ```
         
@@ -1534,46 +1534,46 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     curl -s http://127.0.0.1:20000
     
     # 자신의PC(웹브라우저)에서 작업용EC2 접속 확인 >> 어느 사이트로 접속이 되는가?
-    ****echo -e "Envoy Proxy Demo = http://$(curl -s ipinfo.io/ip):**20000**"
+      echo -e "Envoy Proxy Demo = http://$(curl -s ipinfo.io/ip): 20000 "
     ```
 
 </details>
 
 
 
-`**ingressgateway 인입 구성 방안**` : NLB → istio-ingressgateway , ALB → istio-ingressgateway - [링크](https://www.clud.me/11354dd3-48f3-454d-917f-eca8d975e034) [링크2](https://nyyang.tistory.com/158) [링크3](https://devocean.sk.com/blog/techBoardDetail.do?ID=163656) [링크4](https://kingofbackend.tistory.com/m/244)
+` ingressgateway 인입 구성 방안 ` : NLB → istio-ingressgateway , ALB → istio-ingressgateway - [링크](https://www.clud.me/11354dd3-48f3-454d-917f-eca8d975e034) [링크2](https://nyyang.tistory.com/158) [링크3](https://devocean.sk.com/blog/techBoardDetail.do?ID=163656) [링크4](https://kingofbackend.tistory.com/m/244)
 
-1. **NLB**(IP mode) → istio-ingressgateway : 파드 IP로 직접 연결, Client IP 수집 시 PPv2 활성화 및 envoy 옵션 수정 필요 - [링크](https://istio.io/latest/blog/2020/show-source-ip/)
-2. ***ALB(Instance mode)** → (NodePort) istio-ingressgateway : 노드의 NodePort로 연결(약간 비효율적인 연결 가능), Client IP는 XFF로 수집
-3. **ALB(IP mode)** → istio-ingressgateway : 가능 할 것으로 보임, 테스트 해 볼 것
-- **아래 Istio 실습 전 사전 준비 사항** : AWS LoadBalancer Controller, ExternanDNS
+1.  NLB (IP mode) → istio-ingressgateway : 파드 IP로 직접 연결, Client IP 수집 시 PPv2 활성화 및 envoy 옵션 수정 필요 - [링크](https://istio.io/latest/blog/2020/show-source-ip/)
+2.  *ALB(Instance mode)  → (NodePort) istio-ingressgateway : 노드의 NodePort로 연결(약간 비효율적인 연결 가능), Client IP는 XFF로 수집
+3.  ALB(IP mode)  → istio-ingressgateway : 가능 할 것으로 보임, 테스트 해 볼 것
+-  아래 Istio 실습 전 사전 준비 사항  : AWS LoadBalancer Controller, ExternanDNS
 
 
 
 
 <details><summary>설치</summary>
 
-- **설치** : k8s 1.23~1.26은 **istio 1.17** 지원됨 - [버전](https://istio.io/latest/docs/releases/supported-releases/#support-status-of-istio-releases) [설치](https://istio.io/latest/docs/setup/getting-started/) [Operator](https://istio.io/latest/docs/setup/install/operator/) [Workshop](https://archive.eksworkshop.com/advanced/310_servicemesh_with_istio/)
+-  설치  : k8s 1.23~1.26은  istio 1.17  지원됨 - [버전](https://istio.io/latest/docs/releases/supported-releases/#support-status-of-istio-releases) [설치](https://istio.io/latest/docs/setup/getting-started/) [Operator](https://istio.io/latest/docs/setup/install/operator/) [Workshop](https://archive.eksworkshop.com/advanced/310_servicemesh_with_istio/)
     
     ```bash
-    **# istioctl 설치**
-    **ISTIOV=1.17.2
-    curl -s -L https://istio.io/downloadIstio | ISTIO_VERSION=$ISTIOV TARGET_ARCH=x86_64 sh -**
+     # istioctl 설치 
+     ISTIOV=1.17.2
+    curl -s -L https://istio.io/downloadIstio | ISTIO_VERSION=$ISTIOV TARGET_ARCH=x86_64 sh - 
     tree istio-$ISTIOV -L 2
-    **cp istio-$ISTIOV/bin/istioctl /usr/local/bin/istioctl**
+     cp istio-$ISTIOV/bin/istioctl /usr/local/bin/istioctl 
     istioctl version --remote=false
     
     # (default 프로파일) 컨트롤 플레인 배포 - [링크](https://istio.io/latest/docs/setup/additional-setup/config-profiles/) [Customizing](https://istio.io/latest/docs/setup/additional-setup/customize-installation/)
     istioctl profile list
-    istioctl profile dump **default** | yh
+    istioctl profile dump  default  | yh
     istioctl profile dump --config-path components.ingressGateways
     istioctl profile dump --config-path values.gateways.istio-ingressgateway
-    istioctl install --set profile=**default** -y
+    istioctl install --set profile= default  -y
     
     # 설치 확인
     kubectl get-all -n istio-system
     kubectl get all -n istio-system
-    **kubectl get crd  | grep istio.io | sort**
+     kubectl get crd  | grep istio.io | sort 
     authorizationpolicies.security.istio.io      2023-05-02T12:22:17Z
     destinationrules.networking.istio.io         2023-05-02T12:22:17Z
     envoyfilters.networking.istio.io             2023-05-02T12:22:17Z
@@ -1591,27 +1591,27 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     workloadgroups.networking.istio.io           2023-05-02T12:22:17Z
     
     # NodePort로 변경
-    kubectl patch **svc** -n istio-system **istio-ingressgateway** -p '{"spec":{"type":"NodePort"}}'
+    kubectl patch  svc  -n istio-system  istio-ingressgateway  -p '{"spec":{"type":"NodePort"}}'
     
     # 확인
-    **kubectl get svc,ep -n istio-system istio-ingressgateway**
+     kubectl get svc,ep -n istio-system istio-ingressgateway 
     NAME                   TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                                      AGE
-    istio-ingressgateway   NodePort   10.100.247.44   <none>        **15021:32609**/TCP,80:30479/TCP,443:31783/TCP   92m
+    istio-ingressgateway   NodePort   10.100.247.44   <none>         15021:32609 /TCP,80:30479/TCP,443:31783/TCP   92m
     
     NAME                             ENDPOINTS                                                AGE
     endpoints/istio-ingressgateway   192.168.2.15:15021,192.168.2.15:8080,192.168.2.15:8443   99m
     
     # istio-ingressgateway 의 envoy 버전 확인
-    kubectl exec -it deploy/istio-ingressgateway -n istio-system -c istio-proxy -- **envoy --version**
-    envoy  version: d799381810ae54f1cccb2a9ae79d9c6191ca2c83/**1.25.4**-dev/Clean/RELEASE/BoringSSL
+    kubectl exec -it deploy/istio-ingressgateway -n istio-system -c istio-proxy --  envoy --version 
+    envoy  version: d799381810ae54f1cccb2a9ae79d9c6191ca2c83/ 1.25.4 -dev/Clean/RELEASE/BoringSSL
     
-    **kubectl get svc -n istio-system istio-ingressgateway -o jsonpath={.spec.ports[*]} | jq**
+     kubectl get svc -n istio-system istio-ingressgateway -o jsonpath={.spec.ports[*]} | jq 
     {
-      "name": "**status-port**",
-      "nodePort": **32609**,
-      "port": **15021**,
+      "name": " status-port ",
+      "nodePort":  32609 ,
+      "port":  15021 ,
       "protocol": "TCP",
-      "targetPort": **15021**
+      "targetPort":  15021 
     }
     {
       "name": "http2",
@@ -1628,9 +1628,9 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
       "targetPort": 8443
     }
     
-    **kubectl get deploy/istio-ingressgateway -n istio-system -o jsonpath={.spec.template.spec.containers[0].ports[*]} | jq**
+     kubectl get deploy/istio-ingressgateway -n istio-system -o jsonpath={.spec.template.spec.containers[0].ports[*]} | jq 
     {
-      "containerPort": **15021**,
+      "containerPort":  15021 ,
       "protocol": "TCP"
     }
     {
@@ -1647,12 +1647,12 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
       "protocol": "TCP"
     }
     
-    **kubectl get deploy/istio-ingressgateway -n istio-system -o jsonpath={.spec.template.spec.containers[0].readinessProbe} | jq**
+     kubectl get deploy/istio-ingressgateway -n istio-system -o jsonpath={.spec.template.spec.containers[0].readinessProbe} | jq 
     {
       "failureThreshold": 30,
       "httpGet": {
-        "path": "**/healthz/ready**",
-        "port": **15021**,
+        "path": " /healthz/ready ",
+        "port":  15021 ,
         "scheme": "HTTP"
       },
       "initialDelaySeconds": 1,
@@ -1670,16 +1670,16 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     echo $CERT_ARN
     
     # 배포
-    curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/aews/**istioingress**.yaml
-    MyDomain=$MyDomain HPORT=$HPORT CERT_ARN=$CERT_ARN envsubst < **istioingress**.yaml | kubectl apply -f -
+    curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/aews/ istioingress .yaml
+    MyDomain=$MyDomain HPORT=$HPORT CERT_ARN=$CERT_ARN envsubst <  istioingress .yaml | kubectl apply -f -
     
     # 확인
-    **kubectl get pod,svc,ingress -n istio-system**
+     kubectl get pod,svc,ingress -n istio-system 
     
     # istioingress 접속 시도
     echo "https://istio.${MyDomain}"
     
-    ****# Auto Injection with namespace label : 해당 네임스페이스에 생성되는 모든 파드들은 istio 사이드카가 자동으로 winjection 됨
+      # Auto Injection with namespace label : 해당 네임스페이스에 생성되는 모든 파드들은 istio 사이드카가 자동으로 winjection 됨
     # mutating Webhook admisstion controller 사용
     kubectl label namespace default istio-injection=enabled
     kubectl get ns -L istio-injection
@@ -1692,7 +1692,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
 
 <details><summary>배포</summary>
 
-- **샘플 애플리케이션 배포** - [링크](https://istio.io/latest/docs/examples/bookinfo/)  [실수연발](http://www.webegt.com./cgi-bin/egt/read.cgi?board=Shakespeare&y_number=7&nnew=2) (셰익스피어) [Wikipedia](https://en.wikipedia.org/wiki/The_Comedy_of_Errors)
+-  샘플 애플리케이션 배포  - [링크](https://istio.io/latest/docs/examples/bookinfo/)  [실수연발](http://www.webegt.com./cgi-bin/egt/read.cgi?board=Shakespeare&y_number=7&nnew=2) (셰익스피어) [Wikipedia](https://en.wikipedia.org/wiki/The_Comedy_of_Errors)
     
     [bookinfo + kiali를 이용한 Istio 모니터링](https://tisdev.tistory.com/2)
     
@@ -1710,7 +1710,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     # 설치
     tree istio-$ISTIOV/samples/bookinfo/platform/kube/
     cat istio-$ISTIOV/samples/bookinfo/platform/kube/bookinfo.yaml | yh
-    **kubectl apply -f istio-$ISTIOV/samples/bookinfo/platform/kube/bookinfo.yaml**
+     kubectl apply -f istio-$ISTIOV/samples/bookinfo/platform/kube/bookinfo.yaml 
     
     # 설치 확인
     kubectl get pod,svc
@@ -1723,7 +1723,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     # Istio Gateway(=gw)/VirtualService(=vs) 설정 정보를 확인
     # virtual service 는 다른 네임스페이스의 서비스(ex. svc-nn.<ns>)도 참조할 수 있다
     cat istio-$ISTIOV/samples/bookinfo/networking/bookinfo-gateway.yaml | yh
-    **kubectl apply -f istio-$ISTIOV/samples/bookinfo/networking/bookinfo-gateway.yaml**
+     kubectl apply -f istio-$ISTIOV/samples/bookinfo/networking/bookinfo-gateway.yaml 
     kubectl get gateway,virtualservices
     
     # 외부 접속 주소 확인
@@ -1747,7 +1747,7 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     spec:
       accessLogging:
         - providers:
-          - name: **envoy**
+          - name:  envoy 
     EOF
     
     # 확인
@@ -1761,16 +1761,16 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     ```
     
     - 클라이언트 PC → ALB → Istio ingressgateway 파드 → (Gateway, VirtualService, Service 는 Bypass) → Endpoint(파드 : 사이드카 - Nginx)
-    - **Gateway** : 지정한 인그레스 게이트웨이로부터 트래픽이 인입, 프로토콜 및 포트, HOSTS, Proxy 등 설정 가능
-    - **VirtualService** : 인입 처리할 hosts 설정, L7 PATH 별 라우팅, 목적지에 대한 정책 설정 가능 (envoy route config)
+    -  Gateway  : 지정한 인그레스 게이트웨이로부터 트래픽이 인입, 프로토콜 및 포트, HOSTS, Proxy 등 설정 가능
+    -  VirtualService  : 인입 처리할 hosts 설정, L7 PATH 별 라우팅, 목적지에 대한 정책 설정 가능 (envoy route config)
     
     ![[출처] https://tisdev.tistory.com/2](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e35e2881-ac92-48aa-bed2-abdc9fabb499/Untitled.png)
     
     [출처] https://tisdev.tistory.com/2
     
-    ![새로고침으로 **Reviews** 와 **Ratings** **변경** 확인! 별점 부분 변경 확인!](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e1fc55ca-157a-4a84-9337-f50478a950e5/Untitled.png)
+    ![새로고침으로  Reviews  와  Ratings   변경  확인! 별점 부분 변경 확인!](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/e1fc55ca-157a-4a84-9337-f50478a950e5/Untitled.png)
     
-    새로고침으로 **Reviews** 와 **Ratings** **변경** 확인! 별점 부분 변경 확인!
+    새로고침으로  Reviews  와  Ratings   변경  확인! 별점 부분 변경 확인!
 
 </details>
 
@@ -1778,22 +1778,22 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
 <details><summary>키알리 소개</summary>
 
 
-- **Kiali (키알리) 소개** : 주 데이터 소스(Prometheus**,** Jaeger)- [링크](https://istio.io/latest/docs/ops/integrations/kiali/) [링크2](https://kiali.io/docs/configuration/istio/#monitoring-port-of-the-istiod-pod) [링크3](https://kiali.io/docs/configuration/p8s-jaeger-grafana/)
-    - [Kiali](https://kiali.io/) is an **observability** console for **Istio** with service mesh configuration and validation capabilities. 
-    Kiali provides **detailed metrics** and a **basic [Grafana](https://istio.io/latest/docs/ops/integrations/grafana) integration**, which can be used for advanced queries. 
-    **Distributed tracing** is provided by **integration with [Jaeger](https://istio.io/latest/docs/ops/integrations/jaeger).**
+-  Kiali (키알리) 소개  : 주 데이터 소스(Prometheus ,  Jaeger)- [링크](https://istio.io/latest/docs/ops/integrations/kiali/) [링크2](https://kiali.io/docs/configuration/istio/#monitoring-port-of-the-istiod-pod) [링크3](https://kiali.io/docs/configuration/p8s-jaeger-grafana/)
+    - [Kiali](https://kiali.io/) is an  observability  console for  Istio  with service mesh configuration and validation capabilities. 
+    Kiali provides  detailed metrics  and a  basic [Grafana](https://istio.io/latest/docs/ops/integrations/grafana) integration , which can be used for advanced queries. 
+     Distributed tracing  is provided by  integration with [Jaeger](https://istio.io/latest/docs/ops/integrations/jaeger). 
         - Jaeger 와 연동을 통해서 분산 트레이싱을 제공할 수 있다
-    - **Monitoring port of the IstioD pod** : **Kiali** connects **directly** to the **IstioD** **pod** (not the Service) to check for its **health**.
-    By default, the connection is done to **port** **15014** which is the default monitoring port of the IstioD pod.
+    -  Monitoring port of the IstioD pod  :  Kiali  connects  directly  to the  IstioD   pod  (not the Service) to check for its  health .
+    By default, the connection is done to  port   15014  which is the default monitoring port of the IstioD pod.
         - 파드의 헬스체크는 Kiali 가 직접 IstioD 파드에 TCP Port 15014 를 통해서 체크한다
-    - **Prometheus, Jaeger and Grafana** - [링크](https://kiali.io/docs/configuration/p8s-jaeger-grafana/)
-    **Prometheus** and **Jaeger** are **primary data sources** for **Kiali**.
+    -  Prometheus, Jaeger and Grafana  - [링크](https://kiali.io/docs/configuration/p8s-jaeger-grafana/)
+     Prometheus  and  Jaeger  are  primary data sources  for  Kiali .
     This page describes how to configure Kiali to communicate with these dependencies.
-    A minimalistic **Grafana** integration is also available.
+    A minimalistic  Grafana  integration is also available.
         - 주 데이터 소스는 Prometheus and Jaeger 이며, 최소 수준의 Grafana 와 연동할 수 있다
     
-- **대시보드 : kiali(키알리)** - [링크](https://kiali.io/docs/) [Docs](https://istio.io/latest/docs/tasks/observability/kiali/)
-    - **Kiali (키알리) 대시보드** along with **Prometheus**, **Grafana**, and **Jaeger** - [링크](https://istio.io/latest/docs/setup/getting-started/#dashboard)
+-  대시보드 : kiali(키알리)  - [링크](https://kiali.io/docs/) [Docs](https://istio.io/latest/docs/tasks/observability/kiali/)
+    -  Kiali (키알리) 대시보드  along with  Prometheus ,  Grafana , and  Jaeger  - [링크](https://istio.io/latest/docs/setup/getting-started/#dashboard)
     
     ```bash
     # 배포 (디렉터리에 있는 모든 yaml 자원을 생성)
@@ -1850,14 +1850,14 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
     while true; do curl -s -k "https://istio.${MyDomain}/productpage" | grep -o "<title>.*</title>"; sleep 0.1; done
     ```
     
-    - **Kiali (키알리) 대시보드 둘러보기** - [링크](https://istio.io/latest/docs/tasks/observability/kiali/)
-        - **Namespace** 를 **default** 로 선택 후 **Graph** (Traffic, Versioned app graph) 에서 **Display** 옵션 중 ‘**Traffic Distribution**’ 과 ‘**Traffic Animation**’ 활성화! , ~~Last 1~5m~~
-        - **Applications** 과 **Services** 측면에서의 정보를 확인해보자
-        - **Workloads** 에서 **Logs**(istio-proxy, app) 를 확인할 수 있고, **Envoy** 관련 설정 정보(Clusters, Listeners, Routes, Config 등)를 편리하게 볼 수 있다
+    -  Kiali (키알리) 대시보드 둘러보기  - [링크](https://istio.io/latest/docs/tasks/observability/kiali/)
+        -  Namespace  를  default  로 선택 후  Graph  (Traffic, Versioned app graph) 에서  Display  옵션 중 ‘ Traffic Distribution ’ 과 ‘ Traffic Animation ’ 활성화! , ~~Last 1~5m~~
+        -  Applications  과  Services  측면에서의 정보를 확인해보자
+        -  Workloads  에서  Logs (istio-proxy, app) 를 확인할 수 있고,  Envoy  관련 설정 정보(Clusters, Listeners, Routes, Config 등)를 편리하게 볼 수 있다
         
         ![스크린샷 2021-12-17 오후 4.47.49.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/ee38ade1-36e7-4f42-9e62-a0e14a62c8e4/스크린샷_2021-12-17_오후_4.47.49.png)
         
-        - **Istio Config** 에서 Istio 관련 설정을 볼 수 있고, Action 으로 Istio 관련 오브젝트를 설정/삭제 할 수 있다
+        -  Istio Config  에서 Istio 관련 설정을 볼 수 있고, Action 으로 Istio 관련 오브젝트를 설정/삭제 할 수 있다
     
     ![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/95babbf3-62ac-4167-b6f3-06adb1ab2443/Untitled.png)
     
@@ -1869,13 +1869,13 @@ echo -e "Tetris Game URL = http://tetris.$MyDomain"
 ## CoreDNS
 
 
-쿠버네티스 **DNS 쿼리 Flow** - [링크](https://www.nslookup.io/learning/the-life-of-a-dns-query-in-kubernetes/)
+쿠버네티스  DNS 쿼리 Flow  - [링크](https://www.nslookup.io/learning/the-life-of-a-dns-query-in-kubernetes/)
 
 ![https://www.nslookup.io/learning/the-life-of-a-dns-query-in-kubernetes/](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/fdc45e0d-e11e-4f18-947b-1942d744d179/Untitled.png)
 
 https://www.nslookup.io/learning/the-life-of-a-dns-query-in-kubernetes/
 
-- **(심화) Recent changes to the CoreDNS add-on** - [Link](https://aws.amazon.com/ko/blogs/containers/recent-changes-to-the-coredns-add-on/)
+-  (심화) Recent changes to the CoreDNS add-on  - [Link](https://aws.amazon.com/ko/blogs/containers/recent-changes-to-the-coredns-add-on/)
 
 
 ##  Gatewaty API
@@ -1887,11 +1887,11 @@ https://aws.amazon.com/ko/blogs/containers/introducing-aws-gateway-api-controlle
 ##  파드 간 속도 측정
 
 
-**참고 링크** : [iperf3](https://iperf.fr/iperf-download.php) [docker](https://hub.docker.com/r/networkstatic/iperf3) [github](https://github.com/nerdalert/iperf3) [dockerfile](https://github.com/nerdalert/iperf3/blob/master/Dockerfile)
+ 참고 링크  : [iperf3](https://iperf.fr/iperf-download.php) [docker](https://hub.docker.com/r/networkstatic/iperf3) [github](https://github.com/nerdalert/iperf3) [dockerfile](https://github.com/nerdalert/iperf3/blob/master/Dockerfile)
 
-`iperf3` : **서버** 모드로 동작하는 단말과 **클라이언트** 모드로 동작하는 단말로 구성해서 **최대 네트워크 대역폭** 측정 - TCP, UDP, SCTP 지원
+`iperf3` :  서버  모드로 동작하는 단말과  클라이언트  모드로 동작하는 단말로 구성해서  최대 네트워크 대역폭  측정 - TCP, UDP, SCTP 지원
 
-- (참고) macOS에서 **간략 테스트**
+- (참고) macOS에서  간략 테스트 
 
 <details><summary>펼치기</summary>
 
@@ -1899,90 +1899,90 @@ https://aws.amazon.com/ko/blogs/containers/introducing-aws-gateway-api-controlle
         ```bash
         # iperf3 설치 
         brew install iperf3
-        
+
         # iperf3 테스트 1 : TCP 5201, 측정시간 10초
         iperf3 -s # 서버모드 실행
         iperf3 -c 127.0.0.1 # 클라이언트모드 실행
-        
+
         # iperf3 테스트 2 : TCP 80, 측정시간 5초
         iperf3 -s -p 80
         iperf3 -c 127.0.0.1 -p 80 -t 5
-        
+
         # iperf3 테스트 3 : UDP 사용, 역방향 모드(-R)
         iperf3 -s 
         iperf3 -c 127.0.0.1 -u -b 100G
-        
+
         # iperf3 테스트 4 : 역방향 모드(-R)
         iperf3 -s 
         iperf3 -c 127.0.0.1 -R
-        
+
         # iperf3 테스트 5 : 쌍방향 모드(-R)
         iperf3 -s 
         iperf3 -c 127.0.0.1 --bidir
-        
+
         # iperf3 테스트 6 : TCP 다중 스트림(30개), -P(number of parallel client streams to run)
         iperf3 -s 
         iperf3 -c 127.0.0.1 -P 2 -t 30
         ```
     
-- **[실습] 쿠버네티스 환경에서 속도 측정 테스트**
+-  [실습] 쿠버네티스 환경에서 속도 측정 테스트 
     - 배포 및 확인
         
         ```bash
         # 배포
         curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/aews/k8s-iperf3.yaml
         cat k8s-iperf3.yaml | yh
-        **kubectl apply -f k8s-iperf3.yaml**
+         kubectl apply -f k8s-iperf3.yaml 
         
         # 확인 : 서버와 클라이언트가 다른 워커노드에 배포되었는지 확인
         kubectl get deploy,svc,pod -owide
         
         # 서버 파드 로그 확인 : 기본 5201 포트 Listen
-        **kubectl logs -l app=iperf3-server -f**
+         kubectl logs -l app=iperf3-server -f 
         ```
         
     1. TCP 5201, 측정시간 5초
         
         ```bash
         # 클라이언트 파드에서 아래 명령 실행
-        kubectl exec -it deploy/**iperf3-client** -- **iperf3 -c iperf3-server -t 5**
+        kubectl exec -it deploy/ iperf3-client  --  iperf3 -c iperf3-server -t 5 
         
         # 서버 파드 로그 확인 : 기본 5201 포트 Listen
-        kubectl logs -l **app=iperf3-server** -f
+        kubectl logs -l  app=iperf3-server  -f
         ```
         
     2. UDP 사용, 역방향 모드(-R)
         
         ```bash
         # 클라이언트 파드에서 아래 명령 실행
-        kubectl exec -it deploy/**iperf3-client** -- **iperf3 -c iperf3-server -u -b 20G**
+        kubectl exec -it deploy/ iperf3-client  --  iperf3 -c iperf3-server -u -b 20G 
         
         # 서버 파드 로그 확인 : 기본 5201 포트 Listen
-        kubectl logs -l **app=iperf3-server** -f
+        kubectl logs -l  app=iperf3-server  -f
         ```
         
     3. TCP, 쌍방향 모드(-R)
         
         ```bash
         # 클라이언트 파드에서 아래 명령 실행
-        kubectl exec -it deploy/**iperf3-client** -- **iperf3 -c iperf3-server -t 5 --bidir**
+        kubectl exec -it deploy/ iperf3-client  --  iperf3 -c iperf3-server -t 5 --bidir 
         
         # 서버 파드 로그 확인 : 기본 5201 포트 Listen
-        kubectl logs -l **app=iperf3-server** -f
+        kubectl logs -l  app=iperf3-server  -f
         ```
         
     4. TCP 다중 스트림(30개), -P(number of parallel client streams to run)
         
         ```bash
         # 클라이언트 파드에서 아래 명령 실행
-        kubectl exec -it deploy/**iperf3-client** -- **iperf3 -c iperf3-server -t 10 -P 2**
+        kubectl exec -it deploy/ iperf3-client  --  iperf3 -c iperf3-server -t 10 -P 2 
         
         # 서버 파드 로그 확인 : 기본 5201 포트 Listen
-        kubectl logs -l **app=iperf3-server** -f
+        kubectl logs -l  app=iperf3-server  -f
         ```
         
     
-    - 삭제:  **`kubectl delete -f k8s-iperf3.yaml`**
+    - 삭제:   `kubectl delete -f k8s-iperf3.yaml` 
 
 
 - 샘플 애플리케이션 배포 및 네트워크 정책 적용 실습 2 - [Link](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/cni-network-policy.html#network-policy-stars-demo) ← 직접 실습 해보세요!
@@ -2043,8 +2043,8 @@ kubectl delete -f nginx-dp.yaml
 
     ```bash
     # 현재 노드 AZ 배포 확인
-    **kubectl get node --label-columns=topology.kubernetes.io/zone**
-    NAME                                               STATUS   ROLES    AGE   VERSION                **ZONE**
+     kubectl get node --label-columns=topology.kubernetes.io/zone 
+    NAME                                               STATUS   ROLES    AGE   VERSION                 ZONE 
     ip-192-168-1-225.ap-northeast-2.compute.internal   Ready    <none>   70m   v1.24.11-eks-a59e1f0   ap-northeast-2a
     ip-192-168-2-248.ap-northeast-2.compute.internal   Ready    <none>   70m   v1.24.11-eks-a59e1f0   ap-northeast-2b
     ip-192-168-3-228.ap-northeast-2.compute.internal   Ready    <none>   70m   v1.24.11-eks-a59e1f0   ap-northeast-2c
@@ -2052,7 +2052,7 @@ kubectl delete -f nginx-dp.yaml
     # 테스트를 위한 디플로이먼트와 서비스 배포
     cat <<EOF | kubectl create -f -
     apiVersion: apps/v1
-    kind: **Deployment**
+    kind:  Deployment 
     metadata:
       name: deploy-echo
     spec:
@@ -2068,22 +2068,22 @@ kubectl delete -f nginx-dp.yaml
           terminationGracePeriodSeconds: 0
           containers:
           - name: websrv
-            image: **registry.k8s.io/echoserver:1.5**
+            image:  registry.k8s.io/echoserver:1.5 
             ports:
-            - **containerPort: 8080**
+            -  containerPort: 8080 
     ---
     apiVersion: v1
-    kind: **Service**
+    kind:  Service 
     metadata:
       name: svc-clusterip
     spec:
       ports:
         - name: svc-webport
-          **port: 8080
-          targetPort: 80**
+           port: 8080
+          targetPort: 80 
       selector:
         app: deploy-websrv
-      type: **ClusterIP**
+      type:  ClusterIP 
     EOF
     
     # 확인
@@ -2112,21 +2112,21 @@ kubectl delete -f nginx-dp.yaml
     kubectl get pod -owide
     ```
     
-- 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 : ****AZ(zone) 상관없이 랜덤 확률 부하분산 동작
+- 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 :   AZ(zone) 상관없이 랜덤 확률 부하분산 동작
     
     ```bash
     # 디플로이먼트 파드가 배포된 AZ(zone) 확인
-    **kubectl get pod -l app=deploy-websrv -owide**
+     kubectl get pod -l app=deploy-websrv -owide 
     
     # 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인
-    kubectl exec -it **netshoot-pod** -- curl **svc-clusterip** | grep Hostname
+    kubectl exec -it  netshoot-pod  -- curl  svc-clusterip  | grep Hostname
     Hostname: deploy-echo-7f67d598dc-h9vst
     
-    kubectl exec -it **netshoot-pod** -- curl **svc-clusterip** | grep Hostname
+    kubectl exec -it  netshoot-pod  -- curl  svc-clusterip  | grep Hostname
     Hostname: deploy-echo-7f67d598dc-45trg
     
     # 100번 반복 접속 : 3개의 파드로 AZ(zone) 상관없이 랜덤 확률 부하분산 동작
-    kubectl exec -it netshoot-pod -- zsh -c "for i in {**1..100**}; do curl -s **svc-clusterip** | grep Hostname; done | sort | uniq -c | sort -nr"
+    kubectl exec -it netshoot-pod -- zsh -c "for i in { 1..100 }; do curl -s  svc-clusterip  | grep Hostname; done | sort | uniq -c | sort -nr"
       35 Hostname: deploy-echo-7f67d598dc-45trg
       33 Hostname: deploy-echo-7f67d598dc-hg995
       32 Hostname: deploy-echo-7f67d598dc-h9vst
@@ -2136,19 +2136,19 @@ kubectl delete -f nginx-dp.yaml
     
     ```bash
     #
-    ssh ec2-user@$N1 sudo **iptables -t nat -nvL**
-    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list **PREROUTING**
-    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list **KUBE-SERVICES**
-      305 18300 **KUBE-SVC-KBDEBIL6IU6WL7RF**  tcp  --  *      *       0.0.0.0/0            10.100.155.216       /* default/svc-clusterip:svc-webport cluster IP */ tcp dpt:80
+    ssh ec2-user@$N1 sudo  iptables -t nat -nvL 
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list  PREROUTING 
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list  KUBE-SERVICES 
+      305 18300  KUBE-SVC-KBDEBIL6IU6WL7RF   tcp  --  *      *       0.0.0.0/0            10.100.155.216       /* default/svc-clusterip:svc-webport cluster IP */ tcp dpt:80
       ...
     
-    ****# 노드1에서 SVC 정책 확인 : SEP(Endpoint) 파드 3개 확인 >> 즉, 3개의 파드로 랜덤 확률 부하분산 동작
-    ****ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list **KUBE-SVC-KBDEBIL6IU6WL7RF**
+      # 노드1에서 SVC 정책 확인 : SEP(Endpoint) 파드 3개 확인 >> 즉, 3개의 파드로 랜덤 확률 부하분산 동작
+      ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list  KUBE-SVC-KBDEBIL6IU6WL7RF 
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-      108  6480 KUBE-SEP-**WC4ARU3RZJKCUD7M**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.1.240:8080 */ statistic mode random probability 0.33333333349
-      115  6900 KUBE-SEP-**3HFAJH523NG6SBCX**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.2.36:8080 */ statistic mode random probability 0.50000000000
-       82  4920 KUBE-SEP-**H37XIVQWZO52OMNP**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.3.13:8080 */
+      108  6480 KUBE-SEP- WC4ARU3RZJKCUD7M   all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.1.240:8080 */ statistic mode random probability 0.33333333349
+      115  6900 KUBE-SEP- 3HFAJH523NG6SBCX   all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.2.36:8080 */ statistic mode random probability 0.50000000000
+       82  4920 KUBE-SEP- H37XIVQWZO52OMNP   all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> 192.168.3.13:8080 */
     
     # 노드2에서 동일한 SVC 이름 정책 확인 : 상동
     ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
@@ -2158,85 +2158,85 @@ kubectl delete -f nginx-dp.yaml
     ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
     (상동)
     
-    ****# 3개의 SEP는 각각 개별 파드 접속 정보
-    ****ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP-**WC4ARU3RZJKCUD7M**
+      # 3개의 SEP는 각각 개별 파드 접속 정보
+      ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP- WC4ARU3RZJKCUD7M 
     Chain KUBE-SEP-WC4ARU3RZJKCUD7M (1 references)
      pkts bytes target     prot opt in     out     source               destination
         0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.1.240        0.0.0.0/0            /* default/svc-clusterip:svc-webport */
-      108  6480 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to:**192.168.1.240:8080**
+      108  6480 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to: 192.168.1.240:8080 
     
-    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP-**3HFAJH523NG6SBCX**
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP- 3HFAJH523NG6SBCX 
     Chain KUBE-SEP-3HFAJH523NG6SBCX (1 references)
      pkts bytes target     prot opt in     out     source               destination
         0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.2.36         0.0.0.0/0            /* default/svc-clusterip:svc-webport */
-      115  6900 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to:**192.168.2.36:8080**
+      115  6900 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to: 192.168.2.36:8080 
     
-    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP-**H37XIVQWZO52OMNP**
+    ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SEP- H37XIVQWZO52OMNP 
     Chain KUBE-SEP-H37XIVQWZO52OMNP (1 references)
      pkts bytes target     prot opt in     out     source               destination
         0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.3.13         0.0.0.0/0            /* default/svc-clusterip:svc-webport */
-       82  4920 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to:**192.168.3.13:8080**
+       82  4920 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to: 192.168.3.13:8080 
     ```
     
-- **Topology Aware Hint** 설정 후 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 : **같은 AZ(zone)의 목적지 파드로만 접속**
+-  Topology Aware Hint  설정 후 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 :  같은 AZ(zone)의 목적지 파드로만 접속 
     
     ```bash
     # Topology Aware Hint 설정 : 서비스에 annotate에 아래처럼 추가
-    kubectl annotate service svc-clusterip "**service.kubernetes.io/topology-aware-hints=auto**"
+    kubectl annotate service svc-clusterip " service.kubernetes.io/topology-aware-hints=auto "
     
     # 100번 반복 접속 : 테스트 파드(netshoot-pod)와 같은 AZ(zone)의 목적지 파드로만 접속
-    kubectl exec -it netshoot-pod -- zsh -c "for i in {**1..100**}; do curl -s **svc-clusterip** | grep Hostname; done | sort | uniq -c | sort -nr"
+    kubectl exec -it netshoot-pod -- zsh -c "for i in { 1..100 }; do curl -s  svc-clusterip  | grep Hostname; done | sort | uniq -c | sort -nr"
       100 Hostname: deploy-echo-7f67d598dc-45trg
     
     # endpointslices 확인 시, 기존에 없던 hints 가 추가되어 있음 >> 참고로 describe로는 hints 정보가 출력되지 않음
-    **kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh**
+     kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh 
     apiVersion: v1
     items:
     - addressType: IPv4
       apiVersion: discovery.k8s.io/v1
       endpoints:
-      **- addresses:**
+       - addresses: 
         - 192.168.3.13
         conditions:
           ready: true
           serving: true
           terminating: false
-        **hints:
+         hints:
           forZones:
-          - name: ap-northeast-2c**
-        **nodeName**: **ip-192-168-3-228**.ap-northeast-2.compute.internal
+          - name: ap-northeast-2c 
+         nodeName :  ip-192-168-3-228 .ap-northeast-2.compute.internal
         targetRef:
           kind: Pod
           name: deploy-echo-7f67d598dc-hg995
           namespace: default
           uid: c1ce0e9c-14e7-417d-a1b9-2dfd54da8d4a
         zone: ap-northeast-2c
-      **- addresses:**
+       - addresses: 
         - 192.168.2.65
         conditions:
           ready: true
           serving: true
           terminating: false
-        **hints:
+         hints:
           forZones:
-          - name: ap-northeast-2b**
-        **nodeName: ip-192-168-2-248**.ap-northeast-2.compute.internal
+          - name: ap-northeast-2b 
+         nodeName: ip-192-168-2-248 .ap-northeast-2.compute.internal
         targetRef:
           kind: Pod
           name: deploy-echo-7f67d598dc-h9vst
           namespace: default
           uid: 77af6a1b-c600-456c-96f3-e1af621be2af
         zone: ap-northeast-2b
-      **- addresses:**
+       - addresses: 
         - 192.168.1.240
         conditions:
           ready: true
           serving: true
           terminating: false
-        **hints:
+         hints:
           forZones:
-          - name: ap-northeast-2a**
-        **nodeName: ip-192-168-1-225**.ap-northeast-2.compute.internal
+          - name: ap-northeast-2a 
+         nodeName: ip-192-168-1-225 .ap-northeast-2.compute.internal
         targetRef:
           kind: Pod
           name: deploy-echo-7f67d598dc-45trg
@@ -2254,19 +2254,19 @@ kubectl delete -f nginx-dp.yaml
     ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-        0     0 KUBE-SEP-**WC4ARU3RZJKCUD7M**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.1.240:8080** */
+        0     0 KUBE-SEP- WC4ARU3RZJKCUD7M   all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport ->  192.168.1.240:8080  */
     
     # 노드2에서 SVC 정책 확인 : SEP(Endpoint) 파드 1개 확인(해당 노드와 같은 AZ에 배포된 파드만 출력) >> 동일 AZ간 접속
     ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-        0     0 KUBE-SEP-**3HFAJH523NG6SBCX**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.36:8080** */
+        0     0 KUBE-SEP- 3HFAJH523NG6SBCX   all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport ->  192.168.2.36:8080  */
     
     # 노드3에서 SVC 정책 확인 : SEP(Endpoint) 파드 1개 확인(해당 노드와 같은 AZ에 배포된 파드만 출력) >> 동일 AZ간 접속
     ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-        0     0 KUBE-SEP-**H37XIVQWZO52OMNP**  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.3.13:8080** */
+        0     0 KUBE-SEP- H37XIVQWZO52OMNP   all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport ->  192.168.3.13:8080  */
     ```
     
     - (추가 테스트) 만약 파드 갯수를 1개로 줄여서 같은 AZ에 목적지 파드가 없을 경우?
@@ -2276,44 +2276,44 @@ kubectl delete -f nginx-dp.yaml
     kubectl scale deployment deploy-echo --replicas 1
     
     # 파드 AZ 확인 : 아래 처럼 현재 다른 AZ에 배포
-    **kubectl get pod -owide**
+     kubectl get pod -owide 
     NAME                           READY   STATUS    RESTARTS   AGE   IP              NODE                                               NOMINATED NODE   READINESS GATES
-    **deploy-echo**-7f67d598dc-h9vst   1/1     Running   0          18m   **192.168.2**.65    ip-192-168-2-248.ap-northeast-2.compute.internal   <none>           <none>
-    **netshoot-pod**                   1/1     Running   0          66m   **192.168.1.**137   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
+     deploy-echo -7f67d598dc-h9vst   1/1     Running   0          18m    192.168.2 .65    ip-192-168-2-248.ap-northeast-2.compute.internal   <none>           <none>
+     netshoot-pod                    1/1     Running   0          66m    192.168.1. 137   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
     
     # 100번 반복 접속 : 다른 AZ이지만 목적지파드로 접속됨!
-    kubectl exec -it netshoot-pod -- zsh -c "for i in {**1..100**}; do curl -s **svc-clusterip** | grep Hostname; done | sort | uniq -c | sort -nr"
-      100 Hostname: **deploy-echo**-7f67d598dc-h9vst
+    kubectl exec -it netshoot-pod -- zsh -c "for i in { 1..100 }; do curl -s  svc-clusterip  | grep Hostname; done | sort | uniq -c | sort -nr"
+      100 Hostname:  deploy-echo -7f67d598dc-h9vst
     
     # 아래 3개 노드 모두 SVC에 1개의 SEP 정책 존재
-    **ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF**
+     ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF 
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-      100  6000 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.65:8080** */
+      100  6000 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport ->  192.168.2.65:8080  */
     
-    **ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF**
+     ssh ec2-user@$N2 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF 
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-        0     0 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.65:8080** */
+        0     0 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport ->  192.168.2.65:8080  */
     
-    **ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF**
+     ssh ec2-user@$N3 sudo iptables -v --numeric --table nat --list KUBE-SVC-KBDEBIL6IU6WL7RF 
     Chain KUBE-SVC-KBDEBIL6IU6WL7RF (1 references)
      pkts bytes target     prot opt in     out     source               destination
-        0     0 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport -> **192.168.2.65:8080** */
+        0     0 KUBE-SEP-XFCOE5ZRIDUONHHN  all  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport ->  192.168.2.65:8080  */
     
     # endpointslices 확인 : hint 정보 없음
-    **kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh**
+     kubectl get endpointslices -l kubernetes.io/service-name=svc-clusterip -o yaml | yh 
     ```
     
     - (참고) Topology Aware Hint 설정 제거
     
     ```bash
-    kubectl annotate service svc-clusterip "service.kubernetes.io/topology-aware-hints**-**"
+    kubectl annotate service svc-clusterip "service.kubernetes.io/topology-aware-hints - "
     ```
     
     - 실습 리소스 삭제:  `kubectl delete deploy deploy-echo; kubectl delete svc svc-clusterip`
     
-- (추가) 파드 토폴로지 분배 **topologySpreadConstraints** - [Docs](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/)
+- (추가) 파드 토폴로지 분배  topologySpreadConstraints  - [Docs](https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/)
     
     ```bash
     # 디플로이먼트 배포
@@ -2323,7 +2323,7 @@ kubectl delete -f nginx-dp.yaml
     metadata:
       name: deploy-echo
     spec:
-      **replicas: 6**
+       replicas: 6 
       selector:
         matchLabels:
           app: deploy-websrv
@@ -2338,17 +2338,17 @@ kubectl delete -f nginx-dp.yaml
             image: registry.k8s.io/echoserver:1.5
             ports:
             - containerPort: 8080
-          **topologySpreadConstraints**:
+           topologySpreadConstraints :
           - maxSkew: 1
-            topologyKey: "**topology.kubernetes.io/zone**"
-            whenUnsatisfiable: **DoNotSchedule**
+            topologyKey: " topology.kubernetes.io/zone "
+            whenUnsatisfiable:  DoNotSchedule 
             labelSelector:
               matchLabels:
                 app: deploy-websrv
     EOF
     
     # 파드 토폴로지 분배 확인 : AZ별 2개씩 파드 배포 확인
-    **kubectl get pod -owide**
+     kubectl get pod -owide 
     NAME                           READY   STATUS    RESTARTS   AGE    IP              NODE                                               NOMINATED NODE   READINESS GATES
     deploy-echo-79c4fcbc44-27tr5   1/1     Running   0          108s   192.168.1.240   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
     deploy-echo-79c4fcbc44-2bgcr   1/1     Running   0          108s   192.168.1.177   ip-192-168-1-225.ap-northeast-2.compute.internal   <none>           <none>
@@ -2383,9 +2383,9 @@ https://blog.naver.com/qwerty_1234s/223101405443
 
 `참고 링크` : [Link1](https://aws.amazon.com/ko/blogs/containers/amazon-vpc-cni-now-supports-kubernetes-network-policies/) [Link2](https://github.com/aws-samples/eks-network-policy-examples) [Link3](https://docs.aws.amazon.com/ko_kr/eks/latest/userguide/cni-network-policy.html)
 
-- AWS EKS fully supports the **upstream Kubernetes Network Policy API**, ensuring compatibility and adherence to Kubernetes standards.
+- AWS EKS fully supports the  upstream Kubernetes Network Policy API , ensuring compatibility and adherence to Kubernetes standards.
 
-`동작` : **eBPF**로 패킷 필터링 동작 - Network Policy Controller, Node Agent, eBPF SDK
+`동작` :  eBPF 로 패킷 필터링 동작 - Network Policy Controller, Node Agent, eBPF SDK
 
 - 사전 조건 : EKS 1.25 버전 이상, AWS VPC CNI 1.14 이상, OS 커널 5.10 이상 EKS 최적화 AMI(AL2, Bottlerocket, Ubuntu)
 - Network Policy Controller : v1.25 EKS 버전 이상 자동 설치, 통제 정책 모니터링 후 eBPF 프로그램을 생성 및 업데이트하도록 Node Agent에 지시
@@ -2469,8 +2469,8 @@ kubectl get pod,svc -n another-ns
 # 통신 확인
 kubectl exec -it client-one -- curl demo-app
 kubectl exec -it client-two -- curl demo-app
-kubectl exec -it another-client-one -n another-ns -- curl **demo-app**
-kubectl exec -it another-client-one -n another-ns -- curl demo-app.**default**
+kubectl exec -it another-client-one -n another-ns -- curl  demo-app 
+kubectl exec -it another-client-one -n another-ns -- curl demo-app. default 
 kubectl exec -it another-client-two -n another-ns -- curl demo-app.default.svc
 ```
 
@@ -2484,7 +2484,7 @@ while true; do kubectl exec -it client-one -- curl --connect-timeout 1 demo-app 
 # 정책 적용
 cat advanced/policies/01-deny-all-ingress.yaml | yh
 kubectl apply -f advanced/policies/01-deny-all-ingress.yaml
-**kubectl get networkpolicy**
+ kubectl get networkpolicy 
 
 # 정책 다시 삭제
 kubectl delete -f advanced/policies/01-deny-all-ingress.yaml
@@ -2525,11 +2525,11 @@ kubectl exec -it another-client-two -n another-ns -- curl --connect-timeout 1 de
 
 ```bash
 # 실행 중인 eBPF 프로그램 확인
-for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i **sudo /opt/cni/bin/aws-eks-na-cli ebpf progs**; echo; done
+for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i  sudo /opt/cni/bin/aws-eks-na-cli ebpf progs ; echo; done
 
 # eBPF 로그 확인
 for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo cat /var/log/aws-routed-eni/ebpf-sdk.log; echo; done
-for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo cat /var/log/aws-routed-eni/**network-policy-agent**; echo; done
+for i in $N1 $N2 $N3; do echo ">> node $i <<"; ssh ec2-user@$i sudo cat /var/log/aws-routed-eni/ network-policy-agent ; echo; done
 ```
 
 - 송신 트래픽 거부 : 기본 네임스페이스의 클라이언트-1 포드에서 모든 송신 격리를 적용
@@ -2590,7 +2590,7 @@ The Journey to IPv6 on Amazon EKS: Foundation (Part 3) - [Link](https://aws.amaz
 
 
 ---
-**삭제**
+ 삭제 
 ~~~
 eksctl delete cluster --name $CLUSTER_NAME && aws cloudformation delete-stack --stack-name $CLUSTER_NAME
 ~~~
@@ -2634,14 +2634,14 @@ eksctl delete cluster --name $CLUSTER_NAME && aws cloudformation delete-stack --
           name: aws-load-balancer-controller-walkthrough
           region: ${AWS_REGION}
           version: '1.23'
-        **iam:
+         iam:
           withOIDC: true
           serviceAccounts:
             - metadata:
                 name: aws-load-balancer-controller
                 namespace: kube-system
               attachPolicyARNs:
-                - arn:aws:iam::${AWS_ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy**
+                - arn:aws:iam::${AWS_ACCOUNT}:policy/AWSLoadBalancerControllerIAMPolicy 
         ...
         ```
 
@@ -2667,8 +2667,8 @@ eksctl delete cluster --name $CLUSTER_NAME && aws cloudformation delete-stack --
 - `[도전과제24]` Avoiding Errors & Timeouts with Kubernetes Applications and AWS Load Balancers - [Link](https://aws.github.io/aws-eks-best-practices/networking/loadbalancing/loadbalancing/)
 - `[도전과제25]` ALB 경우 인증서 ARN 지정 없이, 자동 발견 가능 : 방안1(ingress tls), 방안2(ingress rule host) - [Link](https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.7/guide/ingress/cert_discovery/)
 - `EKS Workshop`
-    - **Prefix Delegation :** https://www.eksworkshop.com/docs/networking/vpc-cni/prefix/
-    - **Custom Networking :** https://www.eksworkshop.com/docs/networking/vpc-cni/custom-networking/
-    - **Security Groups for Pods :** https://www.eksworkshop.com/docs/networking/vpc-cni/security-groups-for-pods/
-    - **Network Policies :** https://www.eksworkshop.com/docs/networking/vpc-cni/network-policies/
-    - **Amazon VPC Lattice :** https://www.eksworkshop.com/docs/networking/vpc-lattice/
+    -  Prefix Delegation :  https://www.eksworkshop.com/docs/networking/vpc-cni/prefix/
+    -  Custom Networking :  https://www.eksworkshop.com/docs/networking/vpc-cni/custom-networking/
+    -  Security Groups for Pods :  https://www.eksworkshop.com/docs/networking/vpc-cni/security-groups-for-pods/
+    -  Network Policies :  https://www.eksworkshop.com/docs/networking/vpc-cni/network-policies/
+    -  Amazon VPC Lattice :  https://www.eksworkshop.com/docs/networking/vpc-lattice/
