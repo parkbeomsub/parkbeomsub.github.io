@@ -1087,148 +1087,148 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
 <details><summary>실습 </summary>
 
 
--  Route53 정보 확인 및 변수 지정
+-  Route53 정보 확인 및 변수 지정~
 
-~~~
+    ~~~
 
-# 자신의 도메인 변수 지정 : 소유하고 있는 자신의 도메인을 입력하시면 됩니다
-MyDomain=<자신의 도메인>
-MyDomain=base-on.com
-echo "export MyDomain=gasida.link" >> /etc/profile
+    # 자신의 도메인 변수 지정 : 소유하고 있는 자신의 도메인을 입력하시면 됩니다
+    MyDomain=<자신의 도메인>
+    MyDomain=base-on.com
+    echo "export MyDomain=gasida.link" >> /etc/profile
 
-# 자신의 Route 53 도메인 ID 조회 및 변수 지정
-aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." | jq
-aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Name"
-aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text
-MyDnzHostedZoneId=`aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text`
-echo $MyDnzHostedZoneId
+    # 자신의 Route 53 도메인 ID 조회 및 변수 지정
+    aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." | jq
+    aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Name"
+    aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text
+    MyDnzHostedZoneId=`aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text`
+    echo $MyDnzHostedZoneId
 
-# (옵션) NS 레코드 타입 첫번째 조회
-aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'NS']" | jq -r '.[0].ResourceRecords[].Value'
-# (옵션) A 레코드 타입 모두 조회
-aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']"
+    # (옵션) NS 레코드 타입 첫번째 조회
+    aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'NS']" | jq -r '.[0].ResourceRecords[].Value'
+    # (옵션) A 레코드 타입 모두 조회
+    aws route53 list-resource-record-sets --output json --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']"
 
-# A 레코드 타입 조회
-aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq
-aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" | jq
-aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" --output text
+    # A 레코드 타입 조회
+    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq
+    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" | jq
+    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" --output text
 
-# A 레코드 값 반복 조회
-while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
+    # A 레코드 값 반복 조회
+    while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
 
-~~~
+    ~~~
 
 
-- Exteral DNS 설치 [참조](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
+    - Exteral DNS 설치 [참조](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
 
-~~~
+    ~~~
 
-# EKS 배포 시 Node IAM Role 설정되어 있음
-# eksctl create cluster ... --external-dns-access ...
+    # EKS 배포 시 Node IAM Role 설정되어 있음
+    # eksctl create cluster ... --external-dns-access ...
 
-# 
-MyDomain=<자신의 도메인>
-MyDomain=gasida.link
+    # 
+    MyDomain=<자신의 도메인>
+    MyDomain=gasida.link
 
-# 자신의 Route 53 도메인 ID 조회 및 변수 지정
-MyDnzHostedZoneId=$(aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text)
+    # 자신의 Route 53 도메인 ID 조회 및 변수 지정
+    MyDnzHostedZoneId=$(aws route53 list-hosted-zones-by-name --dns-name "${MyDomain}." --query "HostedZones[0].Id" --output text)
 
-# 변수 확인
-echo $MyDomain, $MyDnzHostedZoneId
+    # 변수 확인
+    echo $MyDomain, $MyDnzHostedZoneId
 
-# ExternalDNS 배포
-curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/aews/externaldns.yaml
-sed -i "s/0.13.4/0.14.0/g" externaldns.yaml
-cat externaldns.yaml | yh
-MyDomain=$MyDomain MyDnzHostedZoneId=$MyDnzHostedZoneId envsubst < externaldns.yaml | kubectl apply -f -
+    # ExternalDNS 배포
+    curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/aews/externaldns.yaml
+    sed -i "s/0.13.4/0.14.0/g" externaldns.yaml
+    cat externaldns.yaml | yh
+    MyDomain=$MyDomain MyDnzHostedZoneId=$MyDnzHostedZoneId envsubst < externaldns.yaml | kubectl apply -f -
 
-# 확인 및 로그 모니터링
-kubectl get pod -l app.kubernetes.io/name=external-dns -n kube-system
-kubectl logs deploy/external-dns -n kube-system -f
+    # 확인 및 로그 모니터링
+    kubectl get pod -l app.kubernetes.io/name=external-dns -n kube-system
+    kubectl logs deploy/external-dns -n kube-system -f
 
-~~~
+    ~~~
 
-- (참고) 기존에 ExternalDNS를 통해 사용한 A/TXT 레코드가 있는 존의 경우에 policy 정책을 upsert-only 로 설정 후 사용 하자 - [Link](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#deploy-externaldns)
-- 해당 옵션은 삭제하면 등록되어 있는 레코드를 남기는 옵션 -> 이번 실습에서는 빠른 실습을 위해 삭제
+    - (참고) 기존에 ExternalDNS를 통해 사용한 A/TXT 레코드가 있는 존의 경우에 policy 정책을 upsert-only 로 설정 후 사용 하자 - [Link](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#deploy-externaldns)
+    - 해당 옵션은 삭제하면 등록되어 있는 레코드를 남기는 옵션 -> 이번 실습에서는 빠른 실습을 위해 삭제
 
-~~~
- --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+    ~~~
+     --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
 
-~~~
+    ~~~
 
-Service(NLB) + 도메인 연동(ExternalDNS) - [도메인체크](https://www.whatsmydns.net/)
+    Service(NLB) + 도메인 연동(ExternalDNS) - [도메인체크](https://www.whatsmydns.net/)
 
-~~~
+    ~~~
 
-# 터미널1 (모니터링)
-watch -d 'kubectl get pod,svc'
-kubectl logs deploy/external-dns -n kube-system -f
+    # 터미널1 (모니터링)
+    watch -d 'kubectl get pod,svc'
+    kubectl logs deploy/external-dns -n kube-system -f
 
-# 테트리스 디플로이먼트 배포
-cat <<EOF | kubectl create -f -
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: tetris
-  labels:
-    app: tetris
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: tetris
-  template:
+    # 테트리스 디플로이먼트 배포
+    cat <<EOF | kubectl create -f -
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
+      name: tetris
       labels:
         app: tetris
     spec:
-      containers:
-      - name: tetris
-        image: bsord/tetris
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: tetris
-  annotations:
-    service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
-    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
-    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
-    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
-    #service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "80"
-spec:
-  selector:
-    app: tetris
-  ports:
-  - port: 80
-    protocol: TCP
-    targetPort: 80
-  type: LoadBalancer
-  loadBalancerClass: service.k8s.aws/nlb
-EOF
+      replicas: 1
+      selector:
+        matchLabels:
+          app: tetris
+      template:
+        metadata:
+          labels:
+            app: tetris
+        spec:
+          containers:
+          - name: tetris
+            image: bsord/tetris
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: tetris
+      annotations:
+        service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+        service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+        service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+        service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+        #service.beta.kubernetes.io/aws-load-balancer-healthcheck-port: "80"
+    spec:
+      selector:
+        app: tetris
+      ports:
+      - port: 80
+        protocol: TCP
+        targetPort: 80
+      type: LoadBalancer
+      loadBalancerClass: service.k8s.aws/nlb
+    EOF
 
-# 배포 확인
-kubectl get deploy,svc,ep tetris
+    # 배포 확인
+    kubectl get deploy,svc,ep tetris
 
-# NLB에 ExternanDNS 로 도메인 연결
-kubectl annotate service tetris "external-dns.alpha.kubernetes.io/hostname=tetris.$MyDomain"
-while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
+    # NLB에 ExternanDNS 로 도메인 연결
+    kubectl annotate service tetris "external-dns.alpha.kubernetes.io/hostname=tetris.$MyDomain"
+    while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
 
-# Route53에 A레코드 확인
-aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq
-aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" | jq .[]
+    # Route53에 A레코드 확인
+    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq
+    aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" | jq .[]
 
-# 확인
-dig +short tetris.$MyDomain @8.8.8.8
-dig +short tetris.$MyDomain
+    # 확인
+    dig +short tetris.$MyDomain @8.8.8.8
+    dig +short tetris.$MyDomain
 
-# 도메인 체크
-echo -e "My Domain Checker = https://www.whatsmydns.net/#A/tetris.$MyDomain"
+    # 도메인 체크
+    echo -e "My Domain Checker = https://www.whatsmydns.net/#A/tetris.$MyDomain"
 
-# 웹 접속 주소 확인 및 접속
-echo -e "Tetris Game URL = http://tetris.$MyDomain"
+    # 웹 접속 주소 확인 및 접속
+    echo -e "Tetris Game URL = http://tetris.$MyDomain"
 
-~~~
+    ~~~
 
 
 (/Images/eks/eksn_71.png)
@@ -2115,6 +2115,7 @@ kubectl delete -f nginx-dp.yaml
 - 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 :   AZ(zone) 상관없이 랜덤 확률 부하분산 동작
     
     ```bash
+
     # 디플로이먼트 파드가 배포된 AZ(zone) 확인
      kubectl get pod -l app=deploy-websrv -owide 
     
@@ -2130,12 +2131,13 @@ kubectl delete -f nginx-dp.yaml
       35 Hostname: deploy-echo-7f67d598dc-45trg
       33 Hostname: deploy-echo-7f67d598dc-hg995
       32 Hostname: deploy-echo-7f67d598dc-h9vst
+
     ```
     
     - (심화) IPTables 정책 확인 : ClusterIP는 KUBE-SVC-Y → KUBE-SEP-Z… (3곳) ⇒ 즉, 3개의 파드로 랜덤 확률 부하분산 동작
     
     ```bash
-    #
+    
     ssh ec2-user@$N1 sudo  iptables -t nat -nvL 
     ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list  PREROUTING 
     ssh ec2-user@$N1 sudo iptables -v --numeric --table nat --list  KUBE-SERVICES 
@@ -2176,11 +2178,13 @@ kubectl delete -f nginx-dp.yaml
      pkts bytes target     prot opt in     out     source               destination
         0     0 KUBE-MARK-MASQ  all  --  *      *       192.168.3.13         0.0.0.0/0            /* default/svc-clusterip:svc-webport */
        82  4920 DNAT       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            /* default/svc-clusterip:svc-webport */ tcp to: 192.168.3.13:8080 
+
     ```
     
 -  Topology Aware Hint  설정 후 테스트 파드(netshoot-pod)에서 ClusterIP 접속 시 부하분산 확인 :  같은 AZ(zone)의 목적지 파드로만 접속 
     
     ```bash
+
     # Topology Aware Hint 설정 : 서비스에 annotate에 아래처럼 추가
     kubectl annotate service svc-clusterip " service.kubernetes.io/topology-aware-hints=auto "
     
@@ -2244,7 +2248,7 @@ kubectl delete -f nginx-dp.yaml
           uid: 53ca3ac7-b9fb-4d98-a3f5-c312e60b1e67
         zone: ap-northeast-2a
       kind: EndpointSlice
-    ...
+    
     ```
     
     - (심화) IPTables 정책 확인 : ClusterIP는 KUBE-SVC-Y → KUBE-SEP-Z… (1곳, 해당 노드와 같은 AZ에 배포된 파드만 출력) ⇒ 동일 AZ간 접속
