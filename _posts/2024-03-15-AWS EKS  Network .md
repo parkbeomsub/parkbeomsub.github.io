@@ -340,7 +340,8 @@ default via 192.168.1.1 dev eth0
 
 -  파드에서 외부 통신  테스트 및 확인
 - 파드 shell 실행 후 외부로 ping 테스트 & 워커 노드에서 tcpdump 및 iptables 정보 확인
-~~~
+
+~~~bash
 
 
  # 작업용 EC2 :  pod-1 Shell 에서 외부로 ping
@@ -431,7 +432,7 @@ tcp      6 23 TIME_WAIT src=172.30.66.58 dst=34.117.59.81 sport=58144 dport=80 s
 <details><summary>설치</summary>
 
 
-~~~
+~~~bash
 
 
 # kube-ops-view
@@ -636,7 +637,7 @@ AWS LoadBalancer Controller 배포 with IRSA - 링크
 
 <details><summary>설치</summary>
 
-~~~
+~~~bash
 
 # OIDC 확인
 aws eks describe-cluster --name $CLUSTER_NAME --query "cluster.identity.oidc.issuer" --output text
@@ -740,7 +741,7 @@ PolicyRule:
 
 <details><summary>테스트</summary>
 
-~~~
+~~~bash
 
 # 모니터링
 watch -d kubectl get pod,svc,ep
@@ -818,7 +819,7 @@ while true; do curl -s --connect-timeout 1 $NLB | egrep 'Hostname|client_address
 - AWS NLB의 대상 그룹 확인 : IP를 확인해보자
 - 파드 2개 → 1개 → 3개 설정 시 동작 : auto discovery ← 어떻게 동작?
 
-~~~
+~~~bash
 
 
 # (신규 터미널) 모니터링
@@ -986,7 +987,7 @@ kubectl describe clusterroles.rbac.authorization.k8s.io aws-load-balancer-contro
 <details><summary>베포 / 설치</summary>
 
 
-~~~
+~~~bash
 # 게임 파드와 Service, Ingress 배포
 curl -s -O https://raw.githubusercontent.com/gasida/PKOS/main/3/ingress1.yaml
 cat ingress1.yaml | yh
@@ -1039,7 +1040,7 @@ kubectl get pod -n game-2048 -owide
 
 - 파드 3개로 증가
 
-~~~
+~~~bash
 
 # 터미널1
 watch kubectl get pod -n game-2048
@@ -1052,7 +1053,7 @@ kubectl scale deployment -n game-2048 deployment-2048 --replicas 3
 
 - 파드 1개로 감소
 
-~~~
+~~~bash
 
 # 터미널2 : 파드 1개로 감소
 kubectl scale deployment -n game-2048 deployment-2048 --replicas 1
@@ -1061,7 +1062,7 @@ kubectl scale deployment -n game-2048 deployment-2048 --replicas 1
 
 > 실습 리소스  삭제
 
-~~~
+~~~bash
 
 kubectl delete ingress ingress-2048 -n game-2048
 kubectl delete svc service-2048 -n game-2048 && kubectl delete deploy deployment-2048 -n game-2048 && kubectl delete ns game-2048
@@ -1089,7 +1090,7 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
 
 -  Route53 정보 확인 및 변수 지정~
 
-  ~~~
+  ~~~bash
 
   # 자신의 도메인 변수 지정 : 소유하고 있는 자신의 도메인을 입력하시면 됩니다
   MyDomain=<자신의 도메인>
@@ -1111,13 +1112,13 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
   aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A'].Name" --output text
   # A 레코드 값 반복 조회
   while true; do aws route53 list-resource-record-sets --hosted-zone-id "${MyDnzHostedZoneId}" --query "ResourceRecordSets[?Type == 'A']" | jq ; date ; echo ; sleep 1; done
-  
+
   ~~~
 
    - Exteral DNS 설치 [참조](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md)
 
 
-    ~~~
+    ~~~bash
 
     # EKS 배포 시 Node IAM Role 설정되어 있음
     # eksctl create cluster ... --external-dns-access ...
@@ -1147,14 +1148,14 @@ Exposing Kubernetes Applications, Part 1: Service and Ingress Resources - [링�
     - (참고) 기존에 ExternalDNS를 통해 사용한 A/TXT 레코드가 있는 존의 경우에 policy 정책을 upsert-only 로 설정 후 사용 하자 - [Link](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/aws.md#deploy-externaldns)
     - 해당 옵션은 삭제하면 등록되어 있는 레코드를 남기는 옵션 -> 이번 실습에서는 빠른 실습을 위해 삭제
 
-    ~~~
+    ~~~bash
      --policy=upsert-only # would prevent ExternalDNS from deleting any records, omit to enable full synchronization
 
     ~~~
 
     Service(NLB) + 도메인 연동(ExternalDNS) - [도메인체크](https://www.whatsmydns.net/)
 
-    ~~~
+    ~~~bash
 
     # 터미널1 (모니터링)
     watch -d 'kubectl get pod,svc'
