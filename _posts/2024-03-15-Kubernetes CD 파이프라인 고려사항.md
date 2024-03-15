@@ -6,7 +6,7 @@ tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나�
 toc: true
 ---
 
-# 쿠버네티스 CI/CD 파이프라인을 구성할 때 고려해야 하는 요소
+
 
 [이전 글](https://parkbeomsub.github.io/devops/%EC%BF%A0%EB%B2%84%EB%84%A4%ED%8B%B0%EC%8A%A4-Devops-Jenkins-%EC%86%8C%EC%8A%A4-%EB%B9%8C%EB%93%9C%ED%95%98%EA%B8%B0/)
 
@@ -25,7 +25,7 @@ toc: true
 ![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory81.png)
    - 위 사진과 같이 빌드에 소스빌드/컨테이너 빌드를 두고 배포를 argocd를 둬서 인프라 환경을  구분하여 배포할 수 있다.
 ---
-![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory82.png)
+![출처:https://cafe.naver.com/kubeops](/Images/인강/linuxhistory83.png)
 
 - 배포를  agrocd 위치에 어디에 두냐에 따라  장단점이 발생
   1.  사진의 배포를 CICD환경에 두는 경우  하나만 관리하는 장점 , 장애시 영향도가 높다.
