@@ -50,15 +50,17 @@ toc: true
 
 <details><summary>코드보기</summary> 
 
-~~~
-
-Pipeline script - DOCKERHUB_USERNAME​ 및 GITHUB_URL 주소 (본인의 Username으로 변경)
-
-~~~
+```jsx
+Pipeline script - DOCKERHUB_USERNAME 및 GITHUB_URL 주소 (본인의 Username으로 변경)
+```
 
 
-~~~
 
+
+
+
+
+```jsx
 pipeline {
     agent any
 
@@ -125,8 +127,7 @@ pipeline {
         }
     }
 }
-
-~~~
+```
 
 </details>
 
