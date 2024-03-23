@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "AWS EKS Network 실습"
+title: "AWS EKS Storage 실습"
 categories: AWS
 tags: [AWS, Container, Kubernetes , EKS , DevOps ,Network ,CNI ]
 toc: true
@@ -1369,9 +1369,9 @@ kubectl delete -f storageclass.yaml
   - https://www.eksworkshop.com/docs/fundamentals/fargate/
   - [https://velog.io/@jhyoo9727/EKS-Fargate-간단-설치](https://velog.io/@jhyoo9727/EKS-Fargate-%EA%B0%84%EB%8B%A8-%EC%84%A4%EC%B9%98)
 
-  [[1주차] Amazon EKS 시작하기 - Nodes - Fargate](https://kschoi728.tistory.com/86)
+   -  [[1주차] Amazon EKS 시작하기 - Nodes - Fargate](https://kschoi728.tistory.com/86)
 
-  [AEWS) Amzaon EKS 설치 및 기본 사용 - Log on Me](https://logonme.net/tech/aews_w1/)
+  -   [AEWS) Amzaon EKS 설치 및 기본 사용 - Log on Me](https://logonme.net/tech/aews_w1/)
 
 <details><summary>Fargate 관련 링크 및 설명</summary>
 
@@ -1699,14 +1699,14 @@ kubectl delete -f storageclass.yaml
 
 ## 참고자료
     
-    - https://leehosu.tistory.com/entry/AEWS-3-1-Amazon-EKS-Storage
+- https://leehosu.tistory.com/entry/AEWS-3-1-Amazon-EKS-Storage
     
-    - https://leehosu.tistory.com/entry/AEWS-3-2-Amazon-EKS-NodeGroup-ARM-Instance-Spot-Instance
+- https://leehosu.tistory.com/entry/AEWS-3-2-Amazon-EKS-NodeGroup-ARM-Instance-Spot-Instance
 
 
-    - https://velog.io/@euijoo3233/AWS-Elastic-Kubernetes-Service-3-EKS-Storage-AEWS-2기#5-mountpoint-for-amazon-s3-csi-driver
+- https://velog.io/@euijoo3233/AWS-Elastic-Kubernetes-Service-3-EKS-Storage-AEWS-2기#5-mountpoint-for-amazon-s3-csi-driver
 
-    - https://velog.io/@hanjoonhyuk/AWS-EKS-Workshop-Study-3주차-스토리지-노드-그룹
+- https://velog.io/@hanjoonhyuk/AWS-EKS-Workshop-Study-3주차-스토리지-노드-그룹
     
     
-    - https://blog.montkim.com/eks-storage
+- https://blog.montkim.com/eks-storage
