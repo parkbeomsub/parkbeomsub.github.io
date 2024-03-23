@@ -13,7 +13,10 @@ toc: true
  > 방식은 아래와 동일하니 위 링크만 변경하여 진행한다.
   [ 실습구성 링크 ](https://parkbeomsub.github.io/aws/AWS-EKS-%EC%84%A4%EC%B9%98(addon-AWS-CNI,-Core-DNS,-kube-proxy)/)
 
+
+
 ![구성](/Images/eks/eks_s1.png)
+
 ![구성](/Images/eks/eks_s2.png)
 
 
@@ -22,6 +25,7 @@ toc: true
 
 <details><summary>설정 확인 및 실습 변수 설정</summary>
 ```bash
+
 # default 네임스페이스 적용
 **kubectl ns default**
 
@@ -85,12 +89,14 @@ helm install kube-ops-view geek-cookbook/kube-ops-view --version 1.2.2 --set env
 kubectl patch svc -n kube-system kube-ops-view -p '{"spec":{"type":"LoadBalancer"}}'
 kubectl **annotate** service kube-ops-view -n kube-system "external-dns.alpha.kubernetes.io/hostname=**kubeopsview**.$MyDomain"
 echo -e "Kube Ops View URL = http://**kubeopsview**.$MyDomain:8080/#scale=1.5"
+
 ```
 
 
- 
 ![구성](/Images/eks/eks_s3.png)
 ![구성](/Images/eks/eks_s4.png)
+
+
 </details>
 
 
