@@ -117,15 +117,39 @@ echo -e "Kube Ops View URL = http://**kubeopsview**.$MyDomain:8080/#scale=1.5"
 > 기본은 PV 생성 > PVC를 생성하여 Pod와 연동을 시키는데  PVC를 생성할 때 Storage Class을 넣게되면 PV까지 생성하게 되는데 이를 동적 프로비저닝이라 한다.
 
 ![구성](/Images/eks/eks_s14.png)
+
 출처:  https://aws.amazon.com/ko/blogs/tech/persistent-storage-for-kubernetes/
 
-> 
+
 
 
 
 </details>
 
 
+## Kubernetes 스토지리 이해
+<details><summary> 소개 </summary>
+- 종류 :  emptyDir, hostPath, PV/PVC
+     - emptyDir : pod 의 생명주기 (생성될 때 만들어지고 삭제될제 삭제됨 )
+     - hostPath : node마다  Mount path을 걸어줘서 특정 노드에서만 동작(경로가 있어야함)
+     -  PV/PVC : 마운트를 별도 오브젝트로 만들어서 관리
+
+![구성](/Images/eks/eks_s15.png)
+
+- 다양한 종류
+    K8S 자체 제공(hostPath, local), 온프렘 솔루션(ceph 등), NFS, 클라우드 스토리지(AWS EBS 등)
+
+    
+![구성](/Images/eks/eks_s16.png)
+
+
+- `동적 프로비저닝` & 볼륨 상태 , `ReclaimPolicy`
+
+    
+![구성](/Images/eks/eks_s17.png)
+
+
+</details>
 
 
 
