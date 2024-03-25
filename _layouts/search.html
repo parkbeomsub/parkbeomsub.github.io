@@ -1,4 +1,4 @@
----
+<!-- ---
 layout: default
 ---
 
@@ -39,4 +39,23 @@ layout: default
         <div class="search-hits"></div>
     {%- endcase -%}
   </div>
-</div>
+</div> -->
+
+
+---
+title: Search
+description: "Search this site"
+layout: main
+permalink: /search/
+tipue_search_active: true # tipuesearch function을 실행하라는 의미
+exclude_from_search: true # tipuesearch 검색대상에서 제외하라는 의미
+---
+<div id="tipue_search_content"></div> # 이 부분은 search_content.js가 담당한다.
+<script>
+$(document).ready(function() {
+  $('#tipue_search_input').tipuesearch({
+    'wholeWords' : false, 
+    'showTime' : false,
+    'minimumLength' : 2  });
+});
+</script>
