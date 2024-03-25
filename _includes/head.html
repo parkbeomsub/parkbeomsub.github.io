@@ -23,3 +23,23 @@
     <script src="{{ script | relative_url }}"></script>
   {% endfor %}
 {% endif %}
+
+<!-- tipuesearch -->
+<link rel="stylesheet" href="/assets/tipuesearch/css/tipuesearch.css">
+# 조건식은 search.html에 접속할 경우 tipuesearch JS를 불러온다. 
+"{"% if page.tipue_search_active %"}"
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>   
+<script src="/assets/tipuesearch/tipuesearch_content.js"></script>
+<script src="/assets/tipuesearch/tipuesearch_set.js"></script>
+<script src="/assets/tipuesearch/tipuesearch.min.js"></script>
+"{"% endif %"}"
+
+
+
+<!-- search box -->
+<form action="/search">
+  <div class="tipue_search_box">
+    <img src="/assets/tipuesearch/search.png" class="tipue_search_icon">
+    <input type="text" name="q" id="tipue_search_input" pattern=".{2,}" title="최소 2글자 이상" required></div>
+  <div style="clear: both;"></div>
+</form>

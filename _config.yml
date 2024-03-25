@@ -291,3 +291,13 @@ defaults:
       show_date: true
 
 date_format: "%Y-%m-%d"      
+
+
+tipue_search:
+  include: # 포함할 url을 선택한다.
+    pages: false # posts 폴더 이외에 다른 문서 선택 여부 (true일 경우 모든 url이 포함된다.)
+    collections: []
+  exclude: # 제외시킬 url을 선택한다.
+    files: [search.html, index.html, tags.html]
+    categories: []
+    tags: []
