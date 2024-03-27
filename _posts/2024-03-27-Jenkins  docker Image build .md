@@ -61,3 +61,41 @@ stage('컨테이너 빌드 및 업로드') {
 
 ~~~
 
+
+## Helm 부가기능 (Pod가 완전 기동 될때까지 결과값 기다림) - helm command 명령어 내용
+
+~~~bash
+
+stage('헬름 배포') {
+  steps {
+    withCredentials([file(credentialsId: 'k8s_master_config', variable: 'KUBECONFIG')]) {
+      sh "helm upgrade api-tester-2224 ./2224/deploy/helm/api-tester -f ./2224/deploy/helm/api-tester/values-dev.yaml" +
+         ...
+         " --wait --timeout=10m" +  // 최대 10분으로 설정
+
+~~~
+
+
+
+## 사용 안하는 이미지는 자동 삭제됨 - config.yaml 내용 
+
+
+~~~bash
+
+// GC 속성 추가하기
+[root@k8s-master ~]# vi /var/lib/kubelet/config.yaml
+-----------------------------------
+imageMinimumGCAge : 3m // 이미지 생성 후 해당 시간이 지나야 GC 대상이 됨 (Default : 2m)
+imageGCHighThresholdPercent : 80 // Disk가 80% 위로 올라가면 GC 수행 (Default : 85)
+imageGCLowThresholdPercent : 70 // Disk가 70% 밑으로 떨어지면 GC 수행 안함(Default : 80)
+-----------------------------------
+
+// kubelet 재시작
+[root@k8s-master ~]# systemctl restart kubelet
+
+
+~~~
+
+
+* Kubernetes docs : https://kubernetes.io/docs/concepts/architecture/garbage-collection/
+
