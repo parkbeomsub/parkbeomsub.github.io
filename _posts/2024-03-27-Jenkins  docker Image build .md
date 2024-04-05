@@ -72,6 +72,7 @@ stage('헬름 배포') {
       sh "helm upgrade api-tester-2224 ./2224/deploy/helm/api-tester -f ./2224/deploy/helm/api-tester/values-dev.yaml" +
          ...
          " --wait --timeout=10m" +  // 최대 10분으로 설정
+        
 
 ~~~
 
