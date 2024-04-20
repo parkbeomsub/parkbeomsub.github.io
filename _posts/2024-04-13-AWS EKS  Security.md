@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "AWS EKS  Security"
+title: "AWS EKS Security"
 categories:  Devops
 tags: [linux, container, kubernetes , AWS , EKS, Monitoring ]
 toc: true
@@ -15,7 +15,8 @@ toc: true
   [ 실습구성 링크 ](https://parkbeomsub.github.io/aws/AWS-EKS-%EC%84%A4%EC%B9%98(addon-AWS-CNI,-Core-DNS,-kube-proxy)/)
 
 
-<details><summary>Amazon EKS (myeks) 윈클릭 배포 (bastion ec2 2대) & 기본 설정</summary>
+<details><summary>Amazon EKS (myeks) 윈클릭 배포 (bastion ec2 2대) & 기본 설정
+</summary> 
 
 
 ```bash
@@ -185,7 +186,8 @@ echo -e "Grafana Web URL = https://grafana.$MyDomain"
 ## K8S 인증/인가
 - `**K8S(API 접근) 인증/인가 소개` : 출처 - 김태민 기술 블로그 - [링크](https://kubetm.github.io/k8s/07-intermediate-basic-resource/authentication/) [링크2](https://kubetm.github.io/k8s/07-intermediate-basic-resource/authorization/)**
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei1.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei1.jpg)
+
     https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/
     
     
@@ -193,7 +195,7 @@ echo -e "Grafana Web URL = https://grafana.$MyDomain"
     - **API 서버 사용** : kubectl(config, 다수 클러스터 관리 가능), 서비스 어카운트, https(x.509 Client Certs) ⇒ `X.509 발음`을 어떻게 하시나요? - [링크](https://youglish.com/pronounce/x.509/english)
     - **API 서버 접근 과정** : 인증 → 인가 → Admission Control(API 요청 검증, 필요 시 변형 - 예. ResourceQuota, LimitRange) - [참고](https://blog.naver.com/alice_k106/221546328906)
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei2.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei2.jpg)
     
    
     
@@ -203,7 +205,7 @@ echo -e "Grafana Web URL = https://grafana.$MyDomain"
     - **kubectl** : 여러 클러스터(**kubeconfig**)를 관리 가능 - **contexts** 에 클러스터와 유저 및 **인증서**/**키** 참고
     - **Service Account** : 기본 서비스 어카운트(default) - 시크릿(CA crt 와 token)
     
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei3.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei3.jpg)
     
     `**인가(Authorization)**`
     
@@ -213,7 +215,7 @@ echo -e "Grafana Web URL = https://grafana.$MyDomain"
         - Role(롤) - (RoleBinding 롤 바인딩) - Service Account(서비스 어카운트) : 롤 바인딩은 롤과 서비스 어카운트를 연결
         - Role(네임스페이스내 자원의 권한) vs ClusterRole(클러스터 수준의 자원의 권한)
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei4.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei4.jpg)
 
 
 
@@ -256,7 +258,7 @@ preferences: {}
 </details>
 
 ### 실습 환경
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei5.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei5.jpg)
 
 - 쿠버네티스에 사용자를 위한 서비스 어카운트(Service Account, SA)를 생성 : dev-k8s, infra-k8s
 - 사용자는 각기 다른 권한(Role, 인가)을 가짐 : dev-k8s(dev-team 네임스페이스 내 모든 동작) , infra-k8s(dev-team 네임스페이스 내 모든 동작)
@@ -298,7 +300,7 @@ kubectl get sa infra-k8s -n infra-team -o yaml | yh
 
  - (심화 참고) dev-k8s 서비스어카운트의 토큰 정보 확인  - https://jwt.io/ → Bearer type - JWT(JSON Web Token) - [링크](https://coffeewhale.com/kubernetes/authentication/http-auth/2020/05/03/auth02/)
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei6.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei6.jpg)
 
     
     https://coffeewhale.com/kubernetes/authentication/http-auth/2020/05/03/auth02/
@@ -312,7 +314,7 @@ kubectl get sa infra-k8s -n infra-team -o yaml | yh
 
     ```
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei7.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei7.jpg)
 
     `**Bearer type - JWT(JSON Web Token)**`
     
@@ -331,7 +333,7 @@ kubectl get sa infra-k8s -n infra-team -o yaml | yh
 
 <details><summary>서비스 어카운트를 지정하여 파드 생성 후 권한 테스트</summary>
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei8.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei8.jpg)
 https://kubetm.github.io/practice/intermediate/object-authentication/
 
 
@@ -416,7 +418,7 @@ alias **k2**='kubectl exec -it infra-kubectl -n infra-team -- kubectl'
 - **롤(Role)** : apiGroups 와 resources 로 지정된 리소스에 대해 **verbs** 권한을 인가
 - **실행 가능한 조작(verbs)** : *(모두 처리), create(생성), delete(삭제), get(조회), list(목록조회), patch(일부업데이트), update(업데이트), watch(변경감시)
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei9.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei9.jpg)
 
 
 https://kubetm.github.io/practice/intermediate/object-authorization/
@@ -550,7 +552,7 @@ alias **k2**='kubectl exec -it infra-kubectl -n infra-team -- kubectl'
 ## EKS 인증/인가
 
 - 동작 : 사용자/애플리케이션 → k8s 사용 시 ⇒ 인증은 AWS IAM, 인가는 K8S RBAC
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei10.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei10.jpg)
 https://kimalarm.tistory.com/65
 
 
@@ -633,20 +635,20 @@ echo -e "RBAC View Web http://$(curl -s ipinfo.io/ip):8800"
 <iframe width="576" height="324" src="https://www.youtube.com/embed/bksogA-WXv8" title="Amazon EKS 마이그레이션 요점정리 - 강인호 솔루션즈 아키텍트, AWS :: AWS Summit Korea 2022" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 kubectl 사용 시 흐름 11:09 ~  
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei11.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei11.jpg)
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei12.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei12.jpg)
 
 https://devlos.tistory.com/75
 
 - **핵심** : 인증은 AWS IAM, 인가는 K8S RBAC에서 처리
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei13.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei13.jpg)
 
 
 https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei14.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei14.jpg)
 
 
 [https://awskoreamarketingasset.s3.amazonaws.com/2022 Summit/pdf/T10S1_EKS 환경을 더 효율적으로 더 안전하게.pdf](https://awskoreamarketingasset.s3.amazonaws.com/2022%20Summit/pdf/T10S1_EKS%20%ED%99%98%EA%B2%BD%EC%9D%84%20%EB%8D%94%20%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C%20%EB%8D%94%20%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C.pdf)
@@ -697,14 +699,14 @@ https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html
     
 2. kubectl의 [Client-Go](https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins) 라이브러리는 **Pre-Signed URL**을 Bearer Token으로 EKS API Cluster Endpoint로 요청을 보냄
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei15.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei15.jpg)
 
     
     https://sharing-for-us.tistory.com/39
     
     - ~~토큰을 [jwt](https://jwt.io/) 사이트에 복붙으로 디코드 정보 확인(HS384 → HS256) PAYLOAD 정보 확인~~ : 일반적인 AWS API 호출과 유사합니다!
         
-       ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei16.png)
+       ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei16.jpg)
 
         
         출처 : https://youtu.be/zIZ6_tYujts?t=231 'AWS 보안 웨비나'
@@ -1040,7 +1042,7 @@ https://docs.aws.amazon.com/eks/latest/userguide/cluster-auth.html
 
 <details><summary>- **EC2 Instance Profile**(IAM Role)에 맵핑된 k8s rbac 확인 해보기</summary>
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei17.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei17.jpg)
 
 
 
@@ -1158,7 +1160,7 @@ https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html#creating-ac
     
     - 워커 노드에 연결된 IAM 역할(정책)을 관리콘솔에서 확인해보자
     
-    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei18.png)
+    ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei18.jpg)
 
     
     https://sharing-for-us.tistory.com/39
@@ -1198,17 +1200,17 @@ https://docs.aws.amazon.com/eks/latest/userguide/access-entries.html#creating-ac
 management controls** - [Link](https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/) & **Access Management** - [Link](https://catalog.workshops.aws/eks-immersionday/en-US/access-management)
     - EKS → 액세스 : IAM 액세스 항목
         
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei19.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei19.jpg)
         
     https://aws.amazon.com/blogs/containers/a-deep-dive-into-simplified-amazon-eks-access-management-controls/
     
     - EKS → 액세스 구성 모드 확인 : EKS API 및 ConfigMap ← **정책 중복 시 EKS API 우선되며 ConfigMap은 무시됨**
         
- ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei20.png)
+ ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei20.jpg)
         
     - 기본 정보 확인 : access policy, access entry, associated-access-policy - [Link](https://catalog.workshops.aws/eks-immersionday/en-US/access-management/2-managed-access-polices) [Docs](https://docs.aws.amazon.com/eks/latest/userguide/access-policies.html#access-policy-permissions) [User-facing_roles](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles)
         
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei121.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei121.jpg)
         https://docs.aws.amazon.com/eks/latest/userguide/access-policies.html#access-policy-permissions
 
 ```bash
@@ -1305,7 +1307,7 @@ management controls** - [Link](https://aws.amazon.com/blogs/containers/a-deep-di
         aws eks describe-access-entry **--cluster-name $CLUSTER_NAME --principal-arn arn:aws:iam::$ACCOUNT_ID:user/testuser | jq**
 ```
         
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei22.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei22.jpg)
 
 
         
@@ -1446,7 +1448,7 @@ management controls** - [Link](https://aws.amazon.com/blogs/containers/a-deep-di
 
 - **EC2 Instance Profile** : 사용하기 편하지만, 최소 권한 부여 원칙에 위배하며 보안상 권고하지 않음 - [링크](https://malwareanalysis.tistory.com/579) → **IRSA**를 쓰시라
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei23.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei23.jpg)
     
     https://sharing-for-us.tistory.com/40
     
@@ -1646,7 +1648,7 @@ kubectl exec -it test-projected-volume -- ls /projected-volume/
 - **AuthN** → **AuthZ** → **Admisstion Control** 권한이 있는 사용자에 한해서 관리자(Admin)가 특정 행동을 제한(validate) 혹은 변경(mutate) - [링크](https://coffeewhale.com/kubernetes/admission-control/2021/04/28/opa1/) [Slack](https://slack.engineering/simple-kubernetes-webhook/)
 - AuthN & AuthZ - **MutatingWebhook** - Object schema validation - **ValidatingWebhook** → etcd
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei24.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei24.jpg)
 
 https://kubernetes.io/blog/2019/03/21/a-guide-to-kubernetes-admission-controllers/
 
@@ -1675,7 +1677,7 @@ kubectl get **mutatingwebhook**configurations
     - **Signature**: Header와 Payload의 변조 가능성을 검증합니다.
 - 각 파트는 base64 URL 인코딩이 되어서 `.`으로 합쳐지게 됩니다.
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei25.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei25.jpg)
 
 https://research.securitum.com/jwt-json-web-token-security/
 
@@ -1706,7 +1708,7 @@ https://research.securitum.com/jwt-json-web-token-security/
 
 
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei26.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei26.jpg)
 
 https://github.com/awskrug/security-group/blob/main/files/
 AWSKRUG_2024_02_EKS_ROLE_MANAGEMENT.pdf
@@ -1715,7 +1717,7 @@ AWSKRUG_2024_02_EKS_ROLE_MANAGEMENT.pdf
 
 19:23초 부터 시작~
 
-![https://youtu.be/iyMcOpXRVWk?si=6uvHWIKH7kwk_EEq&t=1402](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/90b704a4-893c-43a4-bde0-55d93f110f94/Untitled.png)
+![https://youtu.be/iyMcOpXRVWk?si=6uvHWIKH7kwk_EEq&t=1402](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/90b704a4-893c-43a4-bde0-55d93f110f94/Untitled.jpg)
 
 <iframe width="673" height="378" src="https://www.youtube.com/embed/wgH9xL_48vM" title="EKS 환경을 더 효율적으로, 더 안전하게 - 신은수 시큐리티 스페셜리스트 솔루션즈 아키텍트, AWS :: AWS Summit Korea 2022" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -1723,20 +1725,20 @@ AWSKRUG_2024_02_EKS_ROLE_MANAGEMENT.pdf
 
 - The IAM service uses these public keys to validate the token. The workflow is as follows - **JWT**(JSON Web Token), **JWKS**(JSON Web Key Set)
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei27.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei27.jpg)
 
 
 
 https://aws.amazon.com/ko/blogs/containers/diving-into-iam-roles-for-service-accounts/
 
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei28.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei28.jpg)
 
 [https://awskoreamarketingasset.s3.amazonaws.com/2022 Summit/pdf/T10S1_EKS 환경을 더 효율적으로 더 안전하게.pdf](https://awskoreamarketingasset.s3.amazonaws.com/2022%20Summit/pdf/T10S1_EKS%20%ED%99%98%EA%B2%BD%EC%9D%84%20%EB%8D%94%20%ED%9A%A8%EC%9C%A8%EC%A0%81%EC%9C%BC%EB%A1%9C%20%EB%8D%94%20%EC%95%88%EC%A0%84%ED%95%98%EA%B2%8C.pdf)
 
 - AWS SDK는 **AWS_ROLE_ARN** 및 **AWS_WEB_IDENTITY_TOKEN_FILE** 이름의 환경변수를 읽어들여 Web Identity 토큰으로 **AssumeRoleWithWebIdentify**를 호출함으로써 Assume Role을 시도하여 임시 자격 증명을 획득하고, 특정 IAM Role 역할을 사용할 수 있게 됩니다.
 - 이때 Assume Role 동작을 위한 인증은 AWS가 아닌 외부 Web IdP(**EKS IdP**)에 위임하여 처리합니다.
 
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei29.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei29.jpg)
 https://tech.devsisters.com/posts/pod-iam-role/
 
 - EKS IdP를 identity provider로 등록하고, 파드가 Web Identify 토큰을 통해 IAM 역할을 Assume 할 수 있게 Trust Relationship 설정이 필요합니다.
@@ -1744,7 +1746,7 @@ https://tech.devsisters.com/posts/pod-iam-role/
 https://ap-northeast-2.console.aws.amazon.com/cloudtrail/home?region=ap-northeast-2#/events?EventName=AssumeRoleWithWebIdentity
 
 
-  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei30.png)
+  ![https://cafe.naver.com/kubeops](/Images/eks/eks_sei30.jpg)
     https://learnk8s.io/authentication-kubernetes
 
 </details>
@@ -1923,7 +1925,7 @@ kubectl delete pod eks-iam-test2
 
 <details><summary>실습3</summary>
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei31.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei31.jpg)
 https://dev.to/aws-builders/auditing-aws-eks-pod-permissions-4637
 
 - For the **webhook** to inject a new **Token** into our Pod, we are going to create a new Kubernetes Service Account, **annotate** our **Service Account** with an AWS IAM role ARN, and then reference this new Kubernetes Service Account in a Kubernetes Pod. The eksctl tool can be used to automate a few steps for us, but all of these steps can also be done manually.
@@ -1932,7 +1934,7 @@ https://dev.to/aws-builders/auditing-aws-eks-pod-permissions-4637
     2. An **IAM role** with the specified IAM policy
     3. A **trust policy** on that IAM role
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei32.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei32.jpg)
     
     https://sharing-for-us.tistory.com/40
     
@@ -2208,19 +2210,19 @@ IDP=$(aws eks describe-cluster --name myeks --query cluster.identity.oidc.issuer
 
 https://ap-northeast-2.console.aws.amazon.com/cloudtrail/home?region=ap-northeast-2#/events?EventName=AssumeRoleWithWebIdentity
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei33.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei33.jpg)
 
 - **IRSA를 가장 취약하게 사용하는 방법** : 정보 탈취 시 키/토큰 발급 약용 가능 - [링크](https://medium.com/@7424069/aws-how-to-use-eks-irsa-in-the-most-vulnerable-way-5d8f4c8d6d20)
 - **AWS는 JWT 토큰의 유효성만 확인** 하지만 **토큰 파일과 서비스 계정에 지정된 실제 역할 간의 일관성을 보장하지는 않음 → Condition 잘못 설정 시, 토큰과 역할 ARN만 있다면 동일 토큰으로 다른 역할을 맡을 수 있음**
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei33.png))
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei35.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei33.jpg))
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei35.jpg)
 
 https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_ROLE_MANAGEMENT.pdf
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/0e83164f-390f-4a23-9c55-dcafb49c9caa/Untitled.png)
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/0e83164f-390f-4a23-9c55-dcafb49c9caa/Untitled.jpg)
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/6318c51d-3647-4715-8c42-144385e20065/Untitled.png)
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/6318c51d-3647-4715-8c42-144385e20065/Untitled.jpg)
 
 - IAM Channelge Level 6 문제
     - https://bigiamchallenge.com/challenge/1
@@ -2275,22 +2277,22 @@ kubectl get sa
 <details><summary>신기능  EKS Pod Identity </summary>
 
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei36.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei36.jpg)
 https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_ROLE_MANAGEMENT.pdf
 
 - Amazon EKS **Pod Identity**: a new way for applications on EKS to obtain IAM credentials - [Link](https://aws.amazon.com/blogs/containers/amazon-eks-pod-identity-a-new-way-for-applications-on-eks-to-obtain-iam-credentials/)
 - Amazon EKS **Pod Identity** simplifies IAM permissions for applications on Amazon EKS clusters - [Link](https://aws.amazon.com/blogs/aws/amazon-eks-pod-identity-simplifies-iam-permissions-for-applications-on-amazon-eks-clusters/)
 - [EKS Workshop] EKS **Pod Identity** - [Link](https://www.eksworkshop.com/docs/security/amazon-eks-pod-identity/)
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei37.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei37.jpg)
 
 https://youtu.be/iyMcOpXRVWk?si=fFiMV9c7E0pg8Img&t=1409
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei38.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei38.jpg)
 
 https://aws.amazon.com/blogs/containers/amazon-eks-pod-identity-a-new-way-for-applications-on-eks-to-obtain-iam-credentials/
 
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei39.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei39.jpg)
 
 https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_ROLE_MANAGEMENT.pdf
 
@@ -2365,7 +2367,7 @@ https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_RO
     
 - (참고) 노드 EC2 Profile에 작년 기능 출시 이후 Policy에 업데이트됨 : 워커노드 IAM Role 정보 확인
     
-    ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/199871ca-57ce-4e7f-8a4e-e06b65b40e69/Untitled.png)
+    ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/199871ca-57ce-4e7f-8a4e-e06b65b40e69/Untitled.jpg)
     
     ```bash
     {
@@ -2443,20 +2445,20 @@ https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_RO
 
 ```
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei40.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei40.jpg)
 
     
   - EKS → 액세스 : Pod Identity 연결 확인 → 편집 클릭 해보기
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei41.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei41.jpg)
     
 - 테스트용 파드 생성 및 확인 : **AssumeRoleForPodIdentity** - [Link](https://docs.aws.amazon.com/cli/latest/reference/eks-auth/assume-role-for-pod-identity.html)
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei42.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei42.jpg)
     
     https://youtu.be/iyMcOpXRVWk?si=J4q7vOe-W4UhQ1wu&t=2501
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei43.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei43.jpg)
     
     https://ap-northeast-2.console.aws.amazon.com/cloudtrailv2/home?region=ap-northeast-2#/events?EventName=AssumeRoleForPodIdentity
     
@@ -2505,11 +2507,11 @@ https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_RO
     
 - IAM Session tags → **Support for session tags 실습 도전해보세요 - [Link](https://aws.amazon.com/blogs/containers/amazon-eks-pod-identity-a-new-way-for-applications-on-eks-to-obtain-iam-credentials/) [Blog](https://whchoi98.gitbook.io/aws-iam/iam-tag)**
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei44.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei44.jpg)
     
     https://youtu.be/iyMcOpXRVWk?si=dGAnJ6x2qCc6YaQY&t=1680
     
-![https://cafe.naver.com/kubeops](/Images/eks/eks_sei44.png)
+![https://cafe.naver.com/kubeops](/Images/eks/eks_sei44.jpg)
     
 - IRSA vs EKS Pod Identity
     
@@ -2531,7 +2533,7 @@ https://github.com/awskrug/security-group/blob/main/files/AWSKRUG_2024_02_EKS_RO
     - 보안 솔루션으로 링크 로컬 주소 사용 가능 여부 확인, 혹은 이미 사용 중인 주소인지, iptables 로 막혀있는지 확인
     - How to migrate from IRSA to EKS Pod Identity : 기존 IRSA → PodIdentity 마이그레이션 - [Link](https://aws.amazon.com/blogs/containers/amazon-eks-pod-identity-a-new-way-for-applications-on-eks-to-obtain-iam-credentials/)
         
-        ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/2f0a3b28-faec-43f3-81d0-ab95315d4b7f/Untitled.png)
+        ![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/a6af158e-5b0f-4e31-9d12-0d0b2805956a/2f0a3b28-faec-43f3-81d0-ab95315d4b7f/Untitled.jpg)
         
 - **현재 지원 불가능** - [Link](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html#pod-id-considerations)
 - EKS Pod Identities are available on the following:
