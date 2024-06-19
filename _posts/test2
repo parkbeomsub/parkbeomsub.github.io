@@ -1,0 +1,40 @@
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"networking.istio.io/v1alpha3","kind":"Gateway","metadata":{"annotations":{},"name":"bookinfo-gateway","namespace":"default"},"spec":{"selector":{"istio":"ingressgateway"},"servers":[{"hosts":["*"],"port":{"name":"http","number":8080,"protocol":"HTTP"}}]}}
+  creationTimestamp: "2024-05-20T02:42:06Z"
+  generation: 1
+  name: bookinfo-gateway
+  namespace: default
+  resourceVersion: "7465152"
+  uid: 98da413e-1969-4bf4-8ad1-da1257f8236b
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 8080
+      protocol: HTTP
+
+
+
+      
+
+
+
+ORAS_VERSION="1.1.0"
+curl -LO "https://github.com/oras-project/oras/releases/download/v${ORAS_VERSION}/oras_${ORAS_VERSION}_linux_amd64.tar.gz"
+mkdir -p oras-install/
+tar -zxf oras_${ORAS_VERSION}_*.tar.gz -C oras-install/
+sudo mv oras-install/oras /usr/local/bin/
+rm -rf oras_${ORAS_VERSION}_*.tar.gz oras-install/
+export PATH="/usr/local/bin:$PATH"
+
+istioctl manifest generate --set profile=demo  > istio-manifest-demo.yaml
+
+istioctl install --set profile=demo --set hub=dfe965c3-kr1-registry.container.nhncloud.com/container_service/istio -y

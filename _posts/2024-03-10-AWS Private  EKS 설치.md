@@ -469,7 +469,7 @@ aws ec2 create-security-group --group-name my-sg --description "My security grou
 Point_SG=$(aws ec2   describe-security-groups  --group-names my-sg |jq .SecurityGroups[0].VpcId)
 echo “export  Point_SG=$Point_SG” >> /etc/profile
 aws ec2 authorize-security-group-ingress --group-id  “$Point_SG” --protocol tcp --port -443 --cidr 0.0.0.0/0
- 
+
 
 aws  ec2  create-vpc-endpoint --vpc-endpoint-type Interface --vpc-id  $VPCID  --service-name  com.amazonaws.ap-northeast-2.ec2     --subnet-ids  “$PriSubnet1 $PriSubnet2”    --security-group-id  $Point_SG
 aws  ec2  create-vpc-endpoint --vpc-endpoint-type Interface --vpc-id $VPCID --service-name  com.amazonaws.ap-northeast-2.ecr.api    --subnet-ids  “$PriSubnet1 $PriSubnet2”    --security-group-id  $Point_SG
@@ -582,7 +582,7 @@ aws ec2 describe-instances --query "Reservations[*].Instances[*].{PublicIPAdd:Pu
 
 eksctl create ng --cluster private-cluster --region ap-northeast-2 --name private \
 --node-type=t3.medium --node-volume-size=30 --node-private-networking --ssh-access \
---nodes-min 2 --nodes-max 2  #public eksctl create ng --cluster private-cluster --region ap-northeast-2 --name public \
+--nodes-min 2 --nodes-max 2 #publiceksctl create ng --cluster private-cluster --region ap-northeast-2 --name public \
 --node-type=t3.medium --node-volume-size=30 \
 --ssh-access --nodes-min 0 --nodes-max 1 --nodes 0
 

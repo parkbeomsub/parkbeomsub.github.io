@@ -52,3 +52,21 @@ ____
 관련하여 참고 링크는 아래와 같고 도커에 대한 이야기와 명령어에 대한 설명이 있음
 
 1. [참고1](https://lynlab.co.kr/blog/72?source=post_page-----8b00a29a8bd3--------------------------------)
+
+
+
+
+* PROJECT ID : boEv7B6h
+* UUID : ac4f0cfe-dd11-4bcb-9a84-0e32e4e0b7c5
+* email : chyu@sgacorp.kr
+* 요청일시 : 2024-05-08 14:59
+* 기타 요청사항
+    * 신청 유형 : Volume 생성
+    * Volume 명 : prd2user
+    * 용량 : 300
+    * Snapshot : true
+    * VPC : 0282c629-1772-4153-b21a-8531eed82598, 192.168.16.0/20
+    * Subnet : d9862e0e-ab5e-48ba-900b-1b5206b6e0bd, 192.168.20.0/24
+    * NAS 명 : -
+    * regionCode: GOV
+

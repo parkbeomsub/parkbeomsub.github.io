@@ -1,0 +1,25 @@
+cat /var/log/userscript.exitcode
+cat /var/log/userscript.output
+
+cat /var/log/userscript_v2.exitcode
+cat /var/log/userscript_v2.output
+
+
+
+
+PROJECT ID : 5ryf6RTH
+UUID : 5b7b922d-b4ce-49ac-90a8-87c49ba7de05
+email : cs@hgit.info
+요청일시 : 2024-05-24 16:16
+
+
+기타 요청사항
+신청 유형 : Volume 생성
+Volume 명 : jntpNAS
+용량 : 500
+Snapshot : true
+VPC : 5fc4ef6f-dd28-41f6-91cf-1e8229654e24, 10.2.0.0/16
+Subnet : 8c0c62eb-836d-43a8-a6c3-8425619050d2, 10.2.50.0/24
+NAS 명 : -
+regionCode: KR1
+
