@@ -2,7 +2,7 @@
 layout: single
 title: "Kubernetes Jenkins Pipeline - 기초부터 blue/green 까지 "
 categories:  Devops
-tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , DevOps ,jenkins ,CI/DC ,Jenkens ]
+tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , DevOps ,jenkins ,CI/DC ,Jenkens , 1pro]
 toc: true
 ---
 

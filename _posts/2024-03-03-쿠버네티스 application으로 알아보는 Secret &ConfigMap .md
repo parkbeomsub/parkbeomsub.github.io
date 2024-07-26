@@ -2,7 +2,7 @@
 layout: single
 title: "쿠버네티스 application으로 알아보는 Secret &ConfigMap"
 categories: linux
-tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , Secret , ConfigMap  ]
+tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , Secret , ConfigMap , 1pro ]
 toc: true
 ---
 

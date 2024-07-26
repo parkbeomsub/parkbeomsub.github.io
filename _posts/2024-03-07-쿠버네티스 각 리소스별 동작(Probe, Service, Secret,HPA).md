@@ -2,7 +2,7 @@
 layout: single
 title: "쿠버네티스 각 리소스별 동작(Probe, Service, Secret, HPA)"
 categories: linux
-tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , PV,PVC ,Deployment, HPA, Service  ]
+tags: [linux, container, kubernetes , 인강-일프로, 쿠버네티스 어나더 클래스 (지상편) - Sprint 1 2 , PV,PVC ,Deployment, HPA, Service, 1pro  ]
 toc: true
 ---
 
